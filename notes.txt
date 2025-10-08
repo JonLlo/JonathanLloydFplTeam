@@ -1,0 +1,15 @@
+This is the layout:
+
+
+fpl-website/
+│
+├─ client/        # React frontend
+│   ├─ public/
+│   ├─ src/
+│   └─ package.json
+│
+└─ server/        # ASP.NET Core backend
+    ├─ obj/
+    ├─ Properties/
+    ├─ Program.cs
+    └─ ...other C# files
