@@ -14,12 +14,13 @@ var app = builder.Build();
 app.MapGet("/api/test", () => new { message = "API is working!" });
 
 // ----------------------
-// Mini-League Endpoint
+// Mini-League Endpoint - getting the list of data from the minileague
+// This is needed in order for the number line (for the current week).
 // ----------------------
 
-// http://localhost:5176/api/mini-league/275033
+// http://localhost:5176/api/league-data/275033
 
-app.MapGet("/api/mini-league/{id}", async (string id, IHttpClientFactory httpClientFactory) =>
+app.MapGet("/api/league-data/{id}", async (string id, IHttpClientFactory httpClientFactory) =>
 {
     var client = httpClientFactory.CreateClient();
     var url = $"https://fantasy.premierleague.com/api/leagues-classic/{id}/standings/";
@@ -39,30 +40,52 @@ app.MapGet("/api/mini-league/{id}", async (string id, IHttpClientFactory httpCli
 });
 
 
-// ----------------------
-// Player Endpoint
-// ----------------------
-app.MapGet("/api/player/{id}", async (int id, IHttpClientFactory httpClientFactory) =>
+// User Endppoint - getting information regarding the user.
+// This is needed in order for ___
+
+//http://localhost:5176/api/user-data/81991
+app.MapGet("/api/user-data/{id}", async (string id, IHttpClientFactory httpClientFactory) =>
 {
     var client = httpClientFactory.CreateClient();
-    var response = await client.GetStringAsync($"https://fantasy.premierleague.com/api/element-summary/{id}/");
+    var url = $"https://fantasy.premierleague.com/api/entry/{id}/";
 
-    return Results.Ok(new { playerId = id, data = response });
+    try
+    {
+        // Fetch the data from FPL
+        var response = await client.GetStringAsync(url);
+
+        // Return it directly as JSON
+        return Results.Content(response, "application/json");
+    }
+    catch (HttpRequestException ex)
+    {
+        return Results.Problem(detail: ex.Message, statusCode: 500);
+    }
 });
 
-// ----------------------
-// AI Chatbot Endpoint (POST)
-// ----------------------
-app.MapPost("/api/chatbot", async ([FromBody] ChatRequest request) =>
+//History endpoint
+//http://localhost:5176/api/user-history/81991
+app.MapGet("/api/user-history/{id}", async (string id, IHttpClientFactory httpClientFactory) =>
 {
-    // TODO: Integrate OpenAI or custom ML model
-    // For now, just echo the message
-    return Results.Ok(new { message = $"You said: {request.Message}" });
+    var client = httpClientFactory.CreateClient();
+    var url = $"https://fantasy.premierleague.com/api/entry/{id}/history/";
+
+    try
+    {
+        // Fetch the data from FPL
+        var response = await client.GetStringAsync(url);
+
+        // Return it directly as JSON
+        return Results.Content(response, "application/json");
+    }
+    catch (HttpRequestException ex)
+    {
+        return Results.Problem(detail: ex.Message, statusCode: 500);
+    }
 });
+
 
 app.Run();
 
-// ----------------------
-// ChatRequest Model
-// ----------------------
-record ChatRequest(string Message);
+
+
