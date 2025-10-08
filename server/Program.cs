@@ -1,11 +1,8 @@
-using System.Net.Http;
-using Microsoft.AspNetCore.Mvc;
 
-public partial class Program;
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ServerTests")]
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add HttpClient for API calls
 builder.Services.AddHttpClient();
 
 var app = builder.Build();
