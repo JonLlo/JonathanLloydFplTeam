@@ -1,0 +1,9 @@
+/Users/jonnylloyd/fpl-website/ServerTests/bin/Debug/net9.0/.msCoverageSourceRootsMapping_ServerTests
+/Users/jonnylloyd/fpl-website/ServerTests/bin/Debug/net9.0/CoverletSourceRootsMapping_ServerTests
+/Users/jonnylloyd/fpl-website/ServerTests/obj/Debug/net9.0/ServerTests.csproj.AssemblyReference.cache
+/Users/jonnylloyd/fpl-website/ServerTests/obj/Debug/net9.0/MvcTestingAppManifest.json
+/Users/jonnylloyd/fpl-website/ServerTests/obj/Debug/net9.0/ServerTests.GeneratedMSBuildEditorConfig.editorconfig
+/Users/jonnylloyd/fpl-website/ServerTests/obj/Debug/net9.0/ServerTests.AssemblyInfoInputs.cache
+/Users/jonnylloyd/fpl-website/ServerTests/obj/Debug/net9.0/ServerTests.AssemblyInfo.cs
+/Users/jonnylloyd/fpl-website/ServerTests/obj/Debug/net9.0/ServerTests.csproj.CoreCompileInputs.cache
+/Users/jonnylloyd/fpl-website/ServerTests/obj/Debug/net9.0/ServerTests.sourcelink.json

@@ -1,6 +1,8 @@
 using System.Net.Http;
 using Microsoft.AspNetCore.Mvc;
 
+public partial class Program;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add HttpClient for API calls
