@@ -62,7 +62,7 @@ function App() {
           .forEach(week => {
             const weekData = { week: Number(week) };
             weeklyRanks[week]
-              .sort((a, b) => a.rank - b.rank) // rank ascending
+              .sort((a, b) => b.rank - a.rank) // rank ascending
               .forEach((p, idx) => {
                 weekData[p.name] = idx + 1; // league position
               });
@@ -80,7 +80,7 @@ function App() {
 
   // Show legend after animationDuration
   useEffect(() => {
-    const timer = setTimeout(() => setAnimationFinished(true), 1800);
+    const timer = setTimeout(() => setAnimationFinished(true), 1900);
     return () => clearTimeout(timer);
   }, []);
 
@@ -164,6 +164,8 @@ const handleMouseClick = (e) => {
             <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
             <XAxis dataKey="week" />
             <YAxis
+              reversed // keeps 1st place at the top
+
               allowDecimals={false}
               label={{ value: "Rank", angle: -90, position: "insideLeft" }}
             />
@@ -183,7 +185,7 @@ const handleMouseClick = (e) => {
 {playerNames.map((name, index) => (
 <Line
   key={name}
-  type="linear"
+  type="monotone"
   dataKey={name}
   stroke={colours[index % colours.length]}
   strokeWidth={3} // always 3
