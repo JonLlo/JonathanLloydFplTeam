@@ -10,41 +10,18 @@ import {
   ResponsiveContainer
 } from "recharts";
 
-
-
-
-
 function App() {
-
   const colours = [
-    "#1f77b4", // blue
-    "#ff7f0e", // orange
-    "#2ca02c", // green
-    "#d62728", // red
-    "#9467bd", // purple
-    "#8c564b", // brown
-    "#e377c2", // pink
-    "#7f7f7f", // gray
-    "#bcbd22", // olive
-    "#17becf", // cyan
-    "#393b79", // dark blue
-    "#637939", // dark green
-    "#8c6d31", // mustard
-    "#843c39", // brick red
-    "#7b4173", // deep purple
-    "#3182bd", // sky blue
-    "#31a354", // bright green
-    "#756bb1", // lavender
-    "#e6550d", // burnt orange
-    "#969696"  // light gray
+    "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd",
+    "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf",
+    "#393b79", "#637939", "#8c6d31", "#843c39", "#7b4173",
+    "#3182bd", "#31a354", "#756bb1", "#e6550d", "#969696"
   ];
-
 
   const leagueId = 275033;
   const [chartData, setChartData] = useState([]);
   const [playerNames, setPlayerNames] = useState([]);
-  const [activeLines, setActiveLines] = useState([]); // track highlighted lines
-  const [clickedLine, setClickedLine] = useState(null);
+  const [hoveredLine, setHoveredLine] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -57,7 +34,6 @@ function App() {
           name: p.player_name
         }));
         setPlayerNames(players.map(p => p.name));
-        setActiveLines(players.map(p => p.name)); // all lines active initially
 
         const histories = await Promise.all(
           players.map(async (player) => {
@@ -87,13 +63,12 @@ function App() {
             weeklyPoints[week]
               .sort((a, b) => b.points - a.points)
               .forEach((p, idx) => {
-                weekData[p.name] = idx + 1;
+                weekData[p.name] = idx + 1; // rank within league
               });
             chartDataArr.push(weekData);
           });
 
         setChartData(chartDataArr);
-
       } catch (err) {
         console.error("Error fetching data:", err);
       }
@@ -102,20 +77,12 @@ function App() {
     fetchData();
   }, [leagueId]);
 
-  // Handlers to highlight lines when legend is hovered
-  const [hoveredLine, setHoveredLine] = useState(null); // tracks currently hovered legend
-
-  // Handlers to highlight lines when legend is hovered
+  // Legend hover handlers
   const handleMouseEnter = (e) => {
     if (e && e.value) setHoveredLine(e.value);
   };
-
-    const handleMouseLeave = () => {
-      setHoveredLine(null); // remove hover
-    };
-
-  const handleMouseClick = (e) => {
-    return true;
+  const handleMouseLeave = () => {
+    setHoveredLine(null);
   };
 
   return (
@@ -135,18 +102,19 @@ function App() {
             <Legend
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
-              onClick={handleMouseClick}
             />
-{playerNames.map((name, index) => (
-  <Line
-    key={name}
-    type="linear"
-    dataKey={name}
-    stroke={colours[index % colours.length]}
-    strokeWidth={3}
-    opacity={hoveredLine ? (hoveredLine === name ? 1 : 0.03) : 1}
-  />
-))}
+            {playerNames.map((name, index) => (
+              <Line
+                key={name}
+                type="linear"
+                dataKey={name}
+                stroke={colours[index % colours.length]}
+                strokeWidth={3}
+                opacity={hoveredLine ? (hoveredLine === name ? 1 : 0.2) : 1}
+                isAnimationActive={true}        // animate only on initial load
+                animationDuration={1500}        // 1.5s duration
+              />
+            ))}
           </LineChart>
         </ResponsiveContainer>
       ) : (
