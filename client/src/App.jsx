@@ -80,7 +80,7 @@ function App() {
 
   // Show legend after animationDuration
   useEffect(() => {
-    const timer = setTimeout(() => setAnimationFinished(true), 1500);
+    const timer = setTimeout(() => setAnimationFinished(true), 1800);
     return () => clearTimeout(timer);
   }, []);
 
@@ -89,6 +89,59 @@ function App() {
   };
 
   const handleMouseLeave = () => setHoveredLine(null);
+
+
+const [clickedLines, setClickedLines] = useState([]); // array of currently clicked lines
+
+
+// Custom legend function
+const renderLegend = ({ payload }) => (
+  <div style={{ textAlign: "center" }}>
+    {payload.map(entry => (
+      <span
+        key={entry.value}
+        onClick={() => handleMouseClick({ value: entry.value })}
+        onMouseEnter={() => setHoveredLine(entry.value)}
+        onMouseLeave={() => setHoveredLine(null)}
+        style={{
+          margin: "0 8px",
+          cursor: "pointer",
+          fontWeight: clickedLines.includes(entry.value) ? "bold" : "normal",
+          display: "inline-flex",
+          alignItems: "center"
+        }}
+      >
+        {/* colored box */}
+        <span
+          style={{
+            display: "inline-block",
+            width: 12,
+            height: 12,
+            backgroundColor: entry.color, // this keeps the line color
+            marginRight: 4,
+            borderRadius: 2
+          }}
+        />
+        {entry.value}
+      </span>
+    ))}
+  </div>
+);
+
+
+const handleMouseClick = (e) => {
+  if (e && e.value) {
+    setClickedLines((prev) => {
+      if (prev.includes(e.value)) {
+        // line already clicked → remove it
+        return prev.filter((name) => name !== e.value);
+      } else {
+        // line not clicked → add it
+        return [...prev, e.value];
+      }
+    });
+  }
+};
 
   return (
     <div style={{ padding: "2rem", fontFamily: "sans-serif" }}>
@@ -104,25 +157,28 @@ function App() {
               label={{ value: "Rank", angle: -90, position: "insideLeft" }}
             />
             <Tooltip />
+
+
+
+            
             {animationFinished && (
-              <Legend
+              <Legend  content={renderLegend} 
               
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
+                onClick={handleMouseClick}
               />
             )}
-            {playerNames.map((name, index) => (
-              <Line
-                key={name}
-                type="linear"
-                dataKey={name}
-                stroke={colours[index % colours.length]}
-                strokeWidth={3}
-                opacity={hoveredLine ? (hoveredLine === name ? 1 : 0.2) : 1}
-                isAnimationActive={true}
-                animationDuration={1500}
-              />
-            ))}
+{playerNames.map((name, index) => (
+<Line
+  key={name}
+  type="linear"
+  dataKey={name}
+  stroke={colours[index % colours.length]}
+  strokeWidth={3} // always 3
+  opacity={hoveredLine ? (hoveredLine === name ? 1 : 0.2) : 1}
+/>
+))}
           </LineChart>
         </ResponsiveContainer>
       ) : (
