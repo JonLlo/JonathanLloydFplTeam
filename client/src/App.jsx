@@ -176,8 +176,15 @@ const handleMouseClick = (e) => {
   dataKey={name}
   stroke={colours[index % colours.length]}
   strokeWidth={3} // always 3
-  opacity={hoveredLine ? (hoveredLine === name ? 1 : 0.2) : 1}
-/>
+opacity={
+  clickedLines.includes(name)
+    ? 1
+    : hoveredLine
+      ? hoveredLine === name
+        ? 1
+        : 0.2
+      : 1
+}/>
 ))}
           </LineChart>
         </ResponsiveContainer>
