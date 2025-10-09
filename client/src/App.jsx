@@ -103,15 +103,16 @@ function App() {
   }, [leagueId]);
 
   // Handlers to highlight lines when legend is hovered
+  const [hoveredLine, setHoveredLine] = useState(null); // tracks currently hovered legend
 
   // Handlers to highlight lines when legend is hovered
   const handleMouseEnter = (e) => {
-    setActiveLines([e.value]); // only highlight this line
+    if (e && e.value) setHoveredLine(e.value);
   };
 
-  const handleMouseLeave = () => {
-    setActiveLines(playerNames); // reset to show all lines
-  };
+    const handleMouseLeave = () => {
+      setHoveredLine(null); // remove hover
+    };
 
   const handleMouseClick = (e) => {
     return true;
@@ -136,16 +137,16 @@ function App() {
               onMouseLeave={handleMouseLeave}
               onClick={handleMouseClick}
             />
-            {playerNames.map((name, index) => (
-              <Line
-                key={name}
-                type="linear"
-                dataKey={name}
-                stroke={colours[index % colours.length]} // stable color
-                strokeWidth={activeLines.includes(name) ? 3 : 1}
-                opacity={activeLines.includes(name) ? 1 : 0.2}
-              />
-            ))}
+{playerNames.map((name, index) => (
+  <Line
+    key={name}
+    type="linear"
+    dataKey={name}
+    stroke={colours[index % colours.length]}
+    strokeWidth={3}
+    opacity={hoveredLine ? (hoveredLine === name ? 1 : 0.03) : 1}
+  />
+))}
           </LineChart>
         </ResponsiveContainer>
       ) : (
