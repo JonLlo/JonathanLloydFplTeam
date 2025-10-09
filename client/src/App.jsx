@@ -22,6 +22,7 @@ function App() {
   const [chartData, setChartData] = useState([]);
   const [playerNames, setPlayerNames] = useState([]);
   const [hoveredLine, setHoveredLine] = useState(null);
+  const [animationFinished, setAnimationFinished] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -41,29 +42,29 @@ function App() {
             const data = await res.json();
             const history = data.current.map(event => ({
               week: event.event,
-              totalPoints: event.total_points
+              rank: event.total_points // or use rank if you prefer
             }));
             return { name: player.name, history };
           })
         );
 
-        const weeklyPoints = {};
+        const weeklyRanks = {};
         histories.forEach(player => {
           player.history.forEach(h => {
-            if (!weeklyPoints[h.week]) weeklyPoints[h.week] = [];
-            weeklyPoints[h.week].push({ name: player.name, points: h.totalPoints });
+            if (!weeklyRanks[h.week]) weeklyRanks[h.week] = [];
+            weeklyRanks[h.week].push({ name: player.name, rank: h.rank });
           });
         });
 
         const chartDataArr = [];
-        Object.keys(weeklyPoints)
+        Object.keys(weeklyRanks)
           .sort((a, b) => a - b)
           .forEach(week => {
             const weekData = { week: Number(week) };
-            weeklyPoints[week]
-              .sort((a, b) => b.points - a.points)
+            weeklyRanks[week]
+              .sort((a, b) => a.rank - b.rank) // rank ascending
               .forEach((p, idx) => {
-                weekData[p.name] = idx + 1; // rank within league
+                weekData[p.name] = idx + 1; // league position
               });
             chartDataArr.push(weekData);
           });
@@ -77,13 +78,17 @@ function App() {
     fetchData();
   }, [leagueId]);
 
-  // Legend hover handlers
+  // Show legend after animationDuration
+  useEffect(() => {
+    const timer = setTimeout(() => setAnimationFinished(true), 1500);
+    return () => clearTimeout(timer);
+  }, []);
+
   const handleMouseEnter = (e) => {
     if (e && e.value) setHoveredLine(e.value);
   };
-  const handleMouseLeave = () => {
-    setHoveredLine(null);
-  };
+
+  const handleMouseLeave = () => setHoveredLine(null);
 
   return (
     <div style={{ padding: "2rem", fontFamily: "sans-serif" }}>
@@ -94,15 +99,18 @@ function App() {
             <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
             <XAxis dataKey="week" />
             <YAxis
-              reversed={true}
+              reversed
               allowDecimals={false}
               label={{ value: "Rank", angle: -90, position: "insideLeft" }}
             />
             <Tooltip />
-            <Legend
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
-            />
+            {animationFinished && (
+              <Legend
+              
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+              />
+            )}
             {playerNames.map((name, index) => (
               <Line
                 key={name}
@@ -111,8 +119,8 @@ function App() {
                 stroke={colours[index % colours.length]}
                 strokeWidth={3}
                 opacity={hoveredLine ? (hoveredLine === name ? 1 : 0.2) : 1}
-                isAnimationActive={true}        // animate only on initial load
-                animationDuration={1500}        // 1.5s duration
+                isAnimationActive={true}
+                animationDuration={1500}
               />
             ))}
           </LineChart>
