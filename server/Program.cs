@@ -21,6 +21,12 @@ app.UseCors("AllowLocalhost");
 // ----------------------
 // Endpoints
 // ----------------------
+
+//LEAGUE ENDPOINT
+
+
+//275033
+//https://fantasy.premierleague.com/api/leagues-classic/275033/standings/
 app.MapGet("/api/test", () => new { message = "API is working!" });
 
 app.MapGet("/api/league-data/{id}", async (string id, IHttpClientFactory httpClientFactory) =>
@@ -39,6 +45,8 @@ app.MapGet("/api/league-data/{id}", async (string id, IHttpClientFactory httpCli
     }
 });
 
+
+//USER ENDPOINT
 app.MapGet("/api/user-data/{id}", async (string id, IHttpClientFactory httpClientFactory) =>
 {
     var client = httpClientFactory.CreateClient();
