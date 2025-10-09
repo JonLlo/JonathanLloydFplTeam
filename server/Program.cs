@@ -15,7 +15,7 @@ app.MapGet("/api/test", () => new { message = "API is working!" });
 // ----------------------
 // Mini-League Endpoint - getting the list of data from the minileague
 // This is needed in order for the number line (for the current week).
-// ----------------------
+// ----------------------.
 
 // http://localhost:5176/api/league-data/275033
 
