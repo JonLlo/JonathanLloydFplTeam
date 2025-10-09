@@ -1,23 +1,27 @@
-
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ServerTests")]
 
 var builder = WebApplication.CreateBuilder(args);
 
+// 1️⃣ Register services BEFORE building the app
 builder.Services.AddHttpClient();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowLocalhost", policy =>
+        policy.WithOrigins("http://localhost:3000")
+              .AllowAnyMethod()
+              .AllowAnyHeader());
+});
 
+// 2️⃣ Build the app
 var app = builder.Build();
 
+// 3️⃣ Use middleware AFTER building
+app.UseCors("AllowLocalhost");
+
 // ----------------------
-// Test Endpoint
+// Endpoints
 // ----------------------
 app.MapGet("/api/test", () => new { message = "API is working!" });
-
-// ----------------------
-// Mini-League Endpoint - getting the list of data from the minileague
-// This is needed in order for the number line (for the current week).
-// ----------------------.
-
-// http://localhost:5176/api/league-data/275033
 
 app.MapGet("/api/league-data/{id}", async (string id, IHttpClientFactory httpClientFactory) =>
 {
@@ -26,10 +30,7 @@ app.MapGet("/api/league-data/{id}", async (string id, IHttpClientFactory httpCli
 
     try
     {
-        // Fetch the data from FPL
         var response = await client.GetStringAsync(url);
-
-        // Return it directly as JSON
         return Results.Content(response, "application/json");
     }
     catch (HttpRequestException ex)
@@ -38,11 +39,6 @@ app.MapGet("/api/league-data/{id}", async (string id, IHttpClientFactory httpCli
     }
 });
 
-
-// User Endppoint - getting information regarding the user.
-// This is needed in order for ___
-
-//http://localhost:5176/api/user-data/81991
 app.MapGet("/api/user-data/{id}", async (string id, IHttpClientFactory httpClientFactory) =>
 {
     var client = httpClientFactory.CreateClient();
@@ -50,10 +46,7 @@ app.MapGet("/api/user-data/{id}", async (string id, IHttpClientFactory httpClien
 
     try
     {
-        // Fetch the data from FPL
         var response = await client.GetStringAsync(url);
-
-        // Return it directly as JSON
         return Results.Content(response, "application/json");
     }
     catch (HttpRequestException ex)
@@ -62,8 +55,6 @@ app.MapGet("/api/user-data/{id}", async (string id, IHttpClientFactory httpClien
     }
 });
 
-//History endpoint
-//http://localhost:5176/api/user-history/81991
 app.MapGet("/api/user-history/{id}", async (string id, IHttpClientFactory httpClientFactory) =>
 {
     var client = httpClientFactory.CreateClient();
@@ -71,10 +62,7 @@ app.MapGet("/api/user-history/{id}", async (string id, IHttpClientFactory httpCl
 
     try
     {
-        // Fetch the data from FPL
         var response = await client.GetStringAsync(url);
-
-        // Return it directly as JSON
         return Results.Content(response, "application/json");
     }
     catch (HttpRequestException ex)
@@ -83,8 +71,5 @@ app.MapGet("/api/user-history/{id}", async (string id, IHttpClientFactory httpCl
     }
 });
 
-
+// 4️⃣ Run the app
 app.Run();
-
-
-
