@@ -85,13 +85,18 @@ function App() {
   }, []);
 
   const handleMouseEnter = (e) => {
-    if (e && e.value) setHoveredLine(e.value);
+    if (e && e.value && !somethingIsClicked) setHoveredLine(e.value);
   };
 
-  const handleMouseLeave = () => setHoveredLine(null);
+  const handleMouseLeave = () => 
+    {if (!somethingIsClicked) {
+      alert('hu');
+      setHoveredLine(null)}};
 
 
 const [clickedLines, setClickedLines] = useState([]); // array of currently clicked lines
+const [somethingIsClicked, setSomethingIsClicked] = useState(false);
+
 
 
 // Custom legend function
@@ -101,8 +106,8 @@ const renderLegend = ({ payload }) => (
       <span
         key={entry.value}
         onClick={() => handleMouseClick({ value: entry.value })}
-        onMouseEnter={() => setHoveredLine(entry.value)}
-        onMouseLeave={() => setHoveredLine(null)}
+        onMouseEnter={() => {if (!somethingIsClicked) {setHoveredLine(entry.value)}}}
+        onMouseLeave={() => {if (!somethingIsClicked) {setHoveredLine(null)}}}
         style={{
           margin: "0 8px",
           cursor: "pointer",
@@ -132,16 +137,23 @@ const renderLegend = ({ payload }) => (
 const handleMouseClick = (e) => {
   if (e && e.value) {
     setClickedLines((prev) => {
+      let newClickedLines;
       if (prev.includes(e.value)) {
-        // line already clicked → remove it
-        return prev.filter((name) => name !== e.value);
+        // Line already clicked → remove it
+        newClickedLines = prev.filter((name) => name !== e.value);
       } else {
-        // line not clicked → add it
-        return [...prev, e.value];
+        // Line not clicked → add it
+        newClickedLines = [...prev, e.value];
       }
+
+      // Update somethingIsClicked based on new state
+      setSomethingIsClicked(newClickedLines.length > 0);
+
+      return newClickedLines;
     });
   }
 };
+
 
   return (
     <div style={{ padding: "2rem", fontFamily: "sans-serif" }}>
@@ -152,7 +164,6 @@ const handleMouseClick = (e) => {
             <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
             <XAxis dataKey="week" />
             <YAxis
-              reversed
               allowDecimals={false}
               label={{ value: "Rank", angle: -90, position: "insideLeft" }}
             />
@@ -182,7 +193,7 @@ opacity={
     : hoveredLine
       ? hoveredLine === name
         ? 1
-        : 0.2
+        : 0.03
       : 1
 }/>
 ))}
