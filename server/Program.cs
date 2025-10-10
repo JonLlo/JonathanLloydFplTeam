@@ -47,6 +47,7 @@ app.MapGet("/api/league-data/{id}", async (string id, IHttpClientFactory httpCli
 
 
 //USER ENDPOINT
+//https://fantasy.premierleague.com/api/entry/33218/
 app.MapGet("/api/user-data/{id}", async (string id, IHttpClientFactory httpClientFactory) =>
 {
     var client = httpClientFactory.CreateClient();
