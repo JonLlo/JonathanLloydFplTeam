@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+
 import {
   LineChart,
   Line,
@@ -11,6 +13,7 @@ import {
 } from "recharts";
 
 function LeagueChartPage() {
+  const { leagueId } = useParams(); // get leagueId from URL
   const colours = [
     "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd",
     "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf",
@@ -18,7 +21,7 @@ function LeagueChartPage() {
     "#3182bd", "#31a354", "#756bb1", "#e6550d", "#969696"
   ];
 
-  const leagueId = 275033;
+
   const [chartData, setChartData] = useState([]);
   const [playerNames, setPlayerNames] = useState([]);
   const [hoveredLine, setHoveredLine] = useState(null);
