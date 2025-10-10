@@ -7,12 +7,12 @@ function ChooseLeague({ userId }) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-const [selectedLeague, setSelectedLeague] = useState(null);
+const [LeagueId, setLeagueId] = useState(null);
     const navigate = useNavigate();
 
 const handleClick = (leagueId) => {
-    setSelectedLeague(leagueId);  // store the clicked league
-    navigate("/test-page");       // navigate to next page
+    setLeagueId(leagueId);  // store the clicked league
+    navigate("/league-chart");       // navigate to next page
 };
 
     useEffect(() => {

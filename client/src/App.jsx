@@ -9,14 +9,16 @@ import ChooseLeague from "./pages/ChooseLeague";
 
 function App() {
   const [userId, setUserId] = useState("");
+  const [leagueId, setLeagueId] = useState("");
+
 
   return (
     <Router>
       <Routes>
         <Route path="/"element={<HomePage setUserId={setUserId} />} />
-        <Route path="/choose-league" element={<ChooseLeague userId={userId} />} />
+        <Route path="/choose-league" element={<ChooseLeague userId={userId} setLeagueId ={setLeagueId}/>} />
         <Route path="/test-page" element={<TestPage />} />
-        <Route path="/leagueChart" element={<LeagueChartPage />} />
+        <Route path="/league-chart" element={<LeagueChartPage leagueId={leagueId}/>} />
       </Routes>
     </Router>
   );
