@@ -1,7 +1,65 @@
+import { useEffect, useState } from "react";
+
 function ChooseLeague({ userId }) {
+  const [data, setData] = useState(null);
+  const [leagues, setLeagues] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (!userId) return;
+
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        // Relative URL; will be forwarded to backend by the proxy
+        const res = await fetch(`http://localhost:5176/api/user-data/${userId}`);
+        if (!res.ok) throw new Error("Failed to fetch user data from backend");
+
+        const json = await res.json();
+        setData(json);
+
+        // Extract classic leagues
+        setLeagues(json.leagues?.classic || []);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [userId]);
+
+  if (!userId) return <p>Please enter your FPL ID on the home page.</p>;
+  if (loading) return <p>Loading user data...</p>;
+  if (error) return <p>Error: {error}</p>;
+
+  // Show first 500 characters of JSON for preview
+  const jsonPreview = JSON.stringify(data, null, 2).slice(0, 500) + (JSON.stringify(data).length > 500 ? "..." : "");
+
   return (
-    <div style={{ padding: "2rem", textAlign: "center" }}>
-      <h1>Hello, your league ID is {userId}</h1>
+    <div style={{ padding: "2rem", fontFamily: "monospace", whiteSpace: "pre-wrap" }}>
+      <h1>FPL Data for ID {userId}</h1>
+
+      <h2>JSON Preview:</h2>
+      <pre>{jsonPreview}</pre>
+
+      <h2>Classic Leagues:</h2>
+      <ul style={{ listStyle: "none", padding: 0 }}>
+        {leagues.map((league) => (
+          <li key={league.id} style={{ margin: "0.5rem 0" }}>
+            <button
+              style={{ padding: "0.5rem 1rem", cursor: "pointer" }}
+              onClick={() => alert(`You clicked on league: ${league.name}`)}
+            >
+              {league.name}
+            </button>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
