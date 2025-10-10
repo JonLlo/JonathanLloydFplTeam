@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function EnterIdPage() {
+function HomePage() {
   const [userId, setUserId] = useState("");
   const navigate = useNavigate();
 
@@ -30,3 +30,5 @@ export default function EnterIdPage() {
     </div>
   );
 }
+
+export default HomePage;
