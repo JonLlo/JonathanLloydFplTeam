@@ -15,7 +15,7 @@ function App() {
       <Routes>
         <Route path="/"element={<HomePage setUserId={setUserId} />} />
         <Route path="/choose-league" element={<ChooseLeague userId={userId} />} />
-        <Route path="/test" element={<TestPage />} />
+        <Route path="/test-page" element={<TestPage />} />
         <Route path="/leagueChart" element={<LeagueChartPage />} />
       </Routes>
     </Router>

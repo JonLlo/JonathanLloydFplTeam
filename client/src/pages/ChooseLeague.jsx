@@ -1,67 +1,77 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function ChooseLeague({ userId }) {
-  const [data, setData] = useState(null);
-  const [leagues, setLeagues] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+    const [data, setData] = useState(null);
+    const [leagues, setLeagues] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-  useEffect(() => {
-    if (!userId) return;
+const [selectedLeague, setSelectedLeague] = useState(null);
+    const navigate = useNavigate();
 
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
+const handleClick = (leagueId) => {
+    setSelectedLeague(leagueId);  // store the clicked league
+    navigate("/test-page");       // navigate to next page
+};
 
-      try {
-        // Relative URL; will be forwarded to backend by the proxy
-        const res = await fetch(`http://localhost:5176/api/user-data/${userId}`);
-        if (!res.ok) throw new Error("Failed to fetch user data from backend");
+    useEffect(() => {
+        if (!userId) return;
 
-        const json = await res.json();
-        setData(json);
+        const fetchData = async () => {
+            setLoading(true);
+            setError(null);
 
-        // Extract classic leagues
-        setLeagues(json.leagues?.classic || []);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+            try {
+                // Relative URL; will be forwarded to backend by the proxy
+                const res = await fetch(`http://localhost:5176/api/user-data/${userId}`);
+                if (!res.ok) throw new Error("Failed to fetch user data from backend");
 
-    fetchData();
-  }, [userId]);
+                const json = await res.json();
+                setData(json);
 
-  if (!userId) return <p>Please enter your FPL ID on the home page.</p>;
-  if (loading) return <p>Loading user data...</p>;
-  if (error) return <p>Error: {error}</p>;
+                // Extract classic leagues
+                setLeagues(json.leagues?.classic || []);
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-  // Show first 500 characters of JSON for preview
-  const jsonPreview = JSON.stringify(data, null, 2).slice(0, 500) + (JSON.stringify(data).length > 500 ? "..." : "");
+        fetchData();
+    }, [userId]);
 
-  return (
-    <div style={{ padding: "2rem", fontFamily: "monospace", whiteSpace: "pre-wrap" }}>
-      <h1>FPL Data for ID {userId}</h1>
+    if (!userId) return <p>Please enter your FPL ID on the home page.</p>;
+    if (loading) return <p>Loading user data...</p>;
+    if (error) return <p>Error: {error}</p>;
 
-      <h2>JSON Preview:</h2>
-      <pre>{jsonPreview}</pre>
+    // Show first 500 characters of JSON for preview
+    const jsonPreview = JSON.stringify(data, null, 2).slice(0, 500) + (JSON.stringify(data).length > 500 ? "..." : "");
 
-      <h2>Classic Leagues:</h2>
-      <ul style={{ listStyle: "none", padding: 0 }}>
-        {leagues.map((league) => (
-          <li key={league.id} style={{ margin: "0.5rem 0" }}>
-            <button
-              style={{ padding: "0.5rem 1rem", cursor: "pointer" }}
-              onClick={() => alert(`You clicked on league: ${league.name}`)}
-            >
-              {league.name}
-            </button>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
+    return (
+        <div style={{ padding: "2rem", fontFamily: "monospace", whiteSpace: "pre-wrap" }}>
+            <h1>FPL Data for ID {userId}</h1>
+
+            <h2>JSON Preview:</h2>
+            <pre>{jsonPreview}</pre>
+
+            <h2>Classic Leagues:</h2>
+            <ul style={{ listStyle: "none", padding: 0 }}>
+                {leagues.map((league) => (
+                    <li key={league.id} style={{ margin: "0.5rem 0" }}>
+                        <button
+                            style={{ padding: "0.5rem 1rem", cursor: "pointer" }}
+                            onClick={() => handleClick(league.id)}>
+                            {league.name}
+
+
+                        </button>
+                    </li>
+                ))}
+            </ul>
+        </div>
+    );
 }
 
 export default ChooseLeague;
