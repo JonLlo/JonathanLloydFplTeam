@@ -18,7 +18,7 @@ function App() {
         <Route path="/"element={<HomePage />} />
         <Route path="/choose-league/:userId" element={<ChooseLeague/>} />
         <Route path="/test-page" element={<TestPage />} />
-        <Route path="/number-line" element={<NumberLine />} />
+        <Route path="/number-line/:leagueId" element={<NumberLine />} />
         <Route path="/league-chart/:leagueId" element={<LeagueChartPage />} />
       </Routes>
     </Router>

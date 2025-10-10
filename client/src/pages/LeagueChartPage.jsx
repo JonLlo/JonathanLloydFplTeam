@@ -160,7 +160,8 @@ const handleMouseClick = (e) => {
 const navigate = useNavigate();
 
 const NLClick = ( ) => {
-  navigate("/number-line");
+
+    navigate(`/number-line/${leagueId}`); // pass via URL
 }
 
 

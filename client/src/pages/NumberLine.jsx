@@ -1,13 +1,16 @@
 // src/pages/NumberLinePage.jsx
 import React, { useState } from "react";
+import { useParams } from "react-router-dom";
 
 function NumberLinePage() {
   const [value, setValue] = useState(0);
+  const { leagueId } = useParams(); // get leagueId from URL
 
   return (
     <div style={{ padding: "2rem", fontFamily: "sans-serif", textAlign: "center" }}>
       <h1>Number Line Feature</h1>
       <p>Current value: {value}</p>
+      <p>Your league ID is {leagueId}</p>
 
       {/* Simple number input */}
       <input
