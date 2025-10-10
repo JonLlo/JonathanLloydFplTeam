@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 import {
   LineChart,
@@ -157,10 +157,19 @@ const handleMouseClick = (e) => {
   }
 };
 
+const navigate = useNavigate();
+
+const NLClick = ( ) => {
+  navigate("/number-line");
+}
+
 
   return (
     <div style={{ padding: "2rem", fontFamily: "sans-serif" }}>
       <h1>FPL Mini-League Week-by-Week Ranks</h1>
+                  
+      <button onClick={() => NLClick()}>Number Line</button>
+
       {chartData.length > 0 ? (
         <ResponsiveContainer width="100%" height={400}>
           <LineChart data={chartData}>
@@ -173,6 +182,7 @@ const handleMouseClick = (e) => {
               label={{ value: "Rank", angle: -90, position: "insideLeft" }}
             />
             <Tooltip />
+
 
 
 
