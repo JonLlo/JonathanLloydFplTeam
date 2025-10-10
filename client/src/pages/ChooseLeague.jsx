@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
-function ChooseLeague({ userId }) {
+function ChooseLeague() {
+    const {userId} = useParams();
     const [data, setData] = useState(null);
     const [leagues, setLeagues] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -12,6 +13,7 @@ function ChooseLeague({ userId }) {
 const handleClick = (leagueId) => {
   navigate(`/league-chart/${leagueId}`);
 };
+
 
     useEffect(() => {
         if (!userId) return;

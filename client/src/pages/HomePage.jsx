@@ -1,26 +1,22 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-function HomePage({ setUserId }) {
+function HomePage() {
   const [input, setInput] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (input.trim()) {
-      setUserId(input);          // store in parent
-      navigate("/choose-league"); // go to next page
+      // Navigate to the choose-league page with userId in the URL
+      navigate(`/choose-league/${input.trim()}`);
     }
   };
 
   return (
     <div style={{ padding: "2rem", textAlign: "center" }}>
       <h1>Enter Your FPL ID</h1>
-      <form onSubmit={
-
-        handleSubmit
-        
-        }>
+      <form onSubmit={handleSubmit}>
         <input
           type="number"
           placeholder="Enter FPL ID"

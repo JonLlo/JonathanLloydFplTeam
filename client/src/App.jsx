@@ -8,14 +8,13 @@ import HomePage from "./pages/HomePage";
 import ChooseLeague from "./pages/ChooseLeague";
 
 function App() {
-  const [userId, setUserId] = useState("");
 
 
   return (
     <Router>
       <Routes>
-        <Route path="/"element={<HomePage setUserId={setUserId} />} />
-        <Route path="/choose-league" element={<ChooseLeague userId={userId}/>} />
+        <Route path="/"element={<HomePage />} />
+        <Route path="/choose-league/:userId" element={<ChooseLeague/>} />
         <Route path="/test-page" element={<TestPage />} />
         <Route path="/league-chart/:leagueId" element={<LeagueChartPage />} />
       </Routes>
