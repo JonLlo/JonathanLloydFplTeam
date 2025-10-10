@@ -1,14 +1,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-function HomePage() {
-  const [userId, setUserId] = useState("");
+function HomePage({ setUserId }) {
+  const [input, setInput] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (userId.trim()) {
-      navigate(`/leagues?userId=${userId}`);
+    if (input.trim()) {
+      setUserId(input);          // store in parent
+      navigate("/choose-league"); // go to next page
     }
   };
 
@@ -19,8 +20,8 @@ function HomePage() {
         <input
           type="number"
           placeholder="Enter FPL ID"
-          value={userId}
-          onChange={(e) => setUserId(e.target.value)}
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
           style={{ padding: "0.5rem", fontSize: "1rem" }}
         />
         <button type="submit" style={{ marginLeft: "1rem", padding: "0.5rem 1rem" }}>
