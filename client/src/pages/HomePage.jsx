@@ -16,7 +16,11 @@ function HomePage({ setUserId }) {
   return (
     <div style={{ padding: "2rem", textAlign: "center" }}>
       <h1>Enter Your FPL ID</h1>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={
+
+        handleSubmit
+        
+        }>
         <input
           type="number"
           placeholder="Enter FPL ID"
