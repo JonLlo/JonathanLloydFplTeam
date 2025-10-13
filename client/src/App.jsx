@@ -1,5 +1,6 @@
 
 import React, { useState } from "react";
+import "./styles/App.css";
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import TestPage from "./pages/TestPage";
