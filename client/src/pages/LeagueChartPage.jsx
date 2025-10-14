@@ -30,13 +30,26 @@ function LeagueChartPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        var n = 1;
         const leagueRes = await fetch(`http://localhost:5176/api/league-data/${leagueId}`);
         const leagueData = await leagueRes.json();
 
-        const players = leagueData.standings.results.map(p => ({
+        const players = leagueData.standings.results.map(p => (
+        
+          console.log(p.player_name, n),
+          n++,
+
+          {
+
+          
           entry: p.entry,
           name: p.player_name
-        }));
+        }
+      
+      
+      
+      
+      ));
         setPlayerNames(players.map(p => p.name));
 
         const histories = await Promise.all(
@@ -104,7 +117,7 @@ const [somethingIsClicked, setSomethingIsClicked] = useState(false);
 
 // Custom legend function
 const renderLegend = ({ payload }) => (
-  <div style={{ textAlign: "center" }}>
+  <div style={{ textAlign: "center", color: "darkblue" }}>
     {payload.map(entry => (
       <span
         key={entry.value}
@@ -165,61 +178,106 @@ const NLClick = ( ) => {
 }
 
 
-  return (
-    <div style={{ padding: "2rem", fontFamily: "sans-serif" }}>
-      <h1>FPL Mini-League Week-by-Week Ranks</h1>
-                  
-      <button onClick={() => NLClick()}>Number Line</button>
+return (
+  <div className="leaguechart-container">
+    <h1>FPL Mini-League Week-by-Week Ranks</h1>
 
+    <button onClick={NLClick}>Number Line</button>
+
+    {/* Chart section */}
+    <div className="chart-wrapper">
       {chartData.length > 0 ? (
-        <ResponsiveContainer width="100%" height={400}>
-          <LineChart data={chartData}>
-            <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
-            <XAxis dataKey="week" />
-            <YAxis
-              reversed // keeps 1st place at the top
+<ResponsiveContainer width="100%" height={400}>
+  <LineChart
+    data={chartData}
+    margin={{ top: 20, right: 30, left: 10, bottom: 20 }} // 👈 make left smaller
+  >
+    <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
+    <XAxis dataKey="week"
+          allowDecimals={false}
+      label={{
+        value: "GW",
+        dy: 20, // move text down slightly
+        fill: 'black',
+        
+      // move text right slightly to stay visible
+        style: { textAnchor: "default" }
+      }}
+    
+    />
 
-              allowDecimals={false}
-              label={{ value: "Rank", angle: -90, position: "insideLeft" }}
-            />
-            <Tooltip />
+    <YAxis
+      reversed
+      allowDecimals={false}
+      label={{
+        value: "Rank",
+        angle: -90,
+        fill: 'black',
+        position: "insideLeft", // keep it inside
+        dx: 10, // move text right slightly to stay visible
+        style: { textAnchor: "middle" }
+      }}
+    />
+    <Tooltip />
+    {playerNames.map((name, index) => (
+      <Line
+        key={name}
+        type="monotone"
+        dataKey={name}
+        stroke={colours[index % colours.length]}
+        strokeWidth={3}
+        opacity={
+          clickedLines.includes(name)
+            ? 1
+            : hoveredLine
+            ? hoveredLine === name
+              ? 1
+              : 0.03
+            : 1
+        }
+      />
+    ))}
+  </LineChart>
+</ResponsiveContainer>
 
-
-
-
-            
-            {animationFinished && (
-              <Legend  content={renderLegend} 
-              
-                onMouseEnter={handleMouseEnter}
-                onMouseLeave={handleMouseLeave}
-                onClick={handleMouseClick}
-              />
-            )}
-{playerNames.map((name, index) => (
-<Line
-  key={name}
-  type="monotone"
-  dataKey={name}
-  stroke={colours[index % colours.length]}
-  strokeWidth={3} // always 3
-opacity={
-  clickedLines.includes(name)
-    ? 1
-    : hoveredLine
-      ? hoveredLine === name
-        ? 1
-        : 0.03
-      : 1
-}/>
-))}
-          </LineChart>
-        </ResponsiveContainer>
       ) : (
         <p>Loading chart...</p>
       )}
     </div>
-  );
-}
 
+    {/* Separate legend section */}
+    {animationFinished && (
+      <div className="legend-section">
+        <h2>Players</h2>
+        <div className="legend-container">
+          {playerNames.map((name, index) => (
+            <div
+              key={name}
+              className="legend-item"
+              onClick={() => handleMouseClick({ value: name })}
+              onMouseEnter={() => {
+                if (!somethingIsClicked) setHoveredLine(name);
+              }}
+              onMouseLeave={() => {
+                if (!somethingIsClicked) setHoveredLine(null);
+              }}
+              style={{
+                fontWeight: clickedLines.includes(name) ? "bold" : "normal",
+                opacity:
+                  clickedLines.length && !clickedLines.includes(name) ? 0.3 : 1,
+              }}
+            >
+              <span
+                className="legend-color-box"
+                style={{ backgroundColor: colours[index % colours.length] }}
+              />
+              {name}
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+  </div>
+);
+}
 export default LeagueChartPage;

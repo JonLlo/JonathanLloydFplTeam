@@ -20,7 +20,7 @@ h1, h2 {
 /* === Container === */
 .container {
   width: 100%;
-  max-width: 500px; /* optional max width for larger screens */
+  max-width: 800px; /* optional max width for larger screens */
   margin: 0 auto;
   padding: 1.5rem;
 }
@@ -73,6 +73,9 @@ h1, h2 {
 .league-list {
   list-style: none;
   padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 2fr)); /* responsive grid */
+  gap: 0.5rem; /* spacing between buttons */
 }
 
 .league-list li {
@@ -81,7 +84,8 @@ h1, h2 {
 
 .league-list button {
   width: 100%;
-  padding: 0.75rem;
+  padding-top: 2rem;;
+  padding-bottom: 2rem;
   border-radius: 8px;
   background-color: #6c63ff;
   color: white;
@@ -93,6 +97,89 @@ h1, h2 {
 .league-list button:hover {
   background-color: #5a52d4;
 }
+
+/* === LeagueChartPage === */
+.leaguechart-container {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.leaguechart-container h1 {
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+/* Chart wrapper for responsiveness */
+.chart-wrapper {
+  width: 100%;
+  background: lightblue;
+  border-radius: 12px;
+  margin: 0rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  margin-bottom: 1.5rem;
+  padding-left: -9991rem;
+}
+
+/* Number Line button */
+.leaguechart-container button {
+  background-color: dodgerblue;
+  color: white;
+  font-size: 1rem;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 1rem;
+  transition: background-color 0.2s ease;
+}
+
+.leaguechart-container button:hover {
+  background-color: #1e90ff;
+}
+
+/* Custom legend styling */
+.legend-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  margin: 0.25rem 0.75rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.legend-color-box {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  margin-right: 5px;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 600px) {
+  .leaguechart-container {
+    padding: 1rem;
+  }
+
+  .leaguechart-container h1 {
+    font-size: 1.2rem;
+  }
+
+
+  .legend-item {
+    font-size: 0.8rem;
+  }
+}
+
 
 /* === NumberLinePage === */
 .numberline-container {
