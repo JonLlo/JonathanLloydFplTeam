@@ -25,7 +25,8 @@ function LeagueChartPage() {
   const [chartData, setChartData] = useState([]);
   const [playerNames, setPlayerNames] = useState([]);
   const [hoveredLine, setHoveredLine] = useState(null);
-  const [animationFinished, setAnimationFinished] = useState(false);
+  const [animateLines, setAnimateLines] = useState(true);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -95,10 +96,12 @@ function LeagueChartPage() {
   }, [leagueId]);
 
   // Show legend after animationDuration
-  useEffect(() => {
-    const timer = setTimeout(() => setAnimationFinished(true), 1900);
-    return () => clearTimeout(timer);
-  }, []);
+ useEffect(() => {
+  const timer = setTimeout(() => {
+    setAnimateLines(false); // turn off animation after first load
+  }, 1900); // match your animation duration
+  return () => clearTimeout(timer);
+}, []);
 
   const handleMouseEnter = (e) => {
     if (e && e.value && !somethingIsClicked) setHoveredLine(e.value);
@@ -150,9 +153,9 @@ const renderLegend = ({ payload }) => (
 );
 
 const getCustomTicks = (numPlayers) => {
-  const step = 4; // choose your interval
+const step = Math.floor(numPlayers / 8); // roughly 8 lines
   const ticks = [];
-  for (let i = 2; i <= numPlayers; i += step) {
+  for (let i = 1; i <= numPlayers; i += step) {
     ticks.push(i);
   }
   return ticks;
@@ -199,13 +202,13 @@ return (
 <ResponsiveContainer width="100%" height={400}>
   <LineChart
     data={chartData}
-    margin={{ top: 20, right: 30, left: 10, bottom: 20 }} // 👈 make left smaller
+    margin={{ top: 20, right: 30, left: -15, bottom: 10 }} // 👈 make left smaller
   >
     <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
     <XAxis dataKey="week"
           allowDecimals={false}
       label={{
-        value: "GW",
+        //value: "GW",
         dy: 20, // move text down slightly
         fill: 'black',
         
@@ -222,7 +225,7 @@ return (
   domain={[1, playerNames.length + 1]} // 1 = top rank, last player = bottom
 ticks={getCustomTicks(playerNames.length)}
   label={{
-    value: "Rank",
+    //value: "Rank",
     angle: -90,
     fill: 'black',
     position: "insideLeft",
@@ -234,6 +237,7 @@ ticks={getCustomTicks(playerNames.length)}
     <Tooltip />
     {playerNames.map((name, index) => (
       <Line
+        isAnimationActive={animateLines} // controlled via state
         key={name}
         type="monotone"
         dataKey={name}
@@ -248,7 +252,8 @@ ticks={getCustomTicks(playerNames.length)}
               : 0.03
             : 1
         }
-      />
+
+        />
     ))}
   </LineChart>
 </ResponsiveContainer>
@@ -259,7 +264,7 @@ ticks={getCustomTicks(playerNames.length)}
     </div>
 
     {/* Separate legend section */}
-    {animationFinished && (
+    {!animateLines && (
       <div className="legend-section">
         <h2>Players</h2>
         <div className="legend-container">

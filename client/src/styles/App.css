@@ -116,12 +116,12 @@ h1, h2 {
 /* Chart wrapper for responsiveness */
 .chart-wrapper {
   width: 100%;
+  padding: 0px;
   background: lightblue;
   border-radius: 12px;
   margin: 0rem;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
   margin-bottom: 1.5rem;
-  padding-left: -9991rem;
 }
 
 /* Number Line button */
