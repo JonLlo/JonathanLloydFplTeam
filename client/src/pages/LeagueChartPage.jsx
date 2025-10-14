@@ -149,6 +149,14 @@ const renderLegend = ({ payload }) => (
   </div>
 );
 
+const getCustomTicks = (numPlayers) => {
+  const step = 4; // choose your interval
+  const ticks = [];
+  for (let i = 2; i <= numPlayers; i += step) {
+    ticks.push(i);
+  }
+  return ticks;
+};
 
 const handleMouseClick = (e) => {
   if (e && e.value) {
@@ -184,6 +192,7 @@ return (
 
     <button onClick={NLClick}>Number Line</button>
 
+
     {/* Chart section */}
     <div className="chart-wrapper">
       {chartData.length > 0 ? (
@@ -205,19 +214,23 @@ return (
       }}
     
     />
+    
+<YAxis
 
-    <YAxis
-      reversed
-      allowDecimals={false}
-      label={{
-        value: "Rank",
-        angle: -90,
-        fill: 'black',
-        position: "insideLeft", // keep it inside
-        dx: 10, // move text right slightly to stay visible
-        style: { textAnchor: "middle" }
-      }}
-    />
+  reversed
+  allowDecimals={false}
+  domain={[1, playerNames.length + 1]} // 1 = top rank, last player = bottom
+ticks={getCustomTicks(playerNames.length)}
+  label={{
+    value: "Rank",
+    angle: -90,
+    fill: 'black',
+    position: "insideLeft",
+    dx: 10,
+    style: { textAnchor: "middle" }
+  }}
+/>
+
     <Tooltip />
     {playerNames.map((name, index) => (
       <Line
