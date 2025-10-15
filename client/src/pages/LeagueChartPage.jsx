@@ -28,6 +28,12 @@ function LeagueChartPage() {
   const [animateLines, setAnimateLines] = useState(true);
 
 
+  // zoom state for each card
+  const [zoomRank, setZoomRank] = useState(1);
+  const [zoomPoints, setZoomPoints] = useState(1);
+  const zoomStep = 0.2;
+
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -36,21 +42,21 @@ function LeagueChartPage() {
         const leagueData = await leagueRes.json();
 
         const players = leagueData.standings.results.map(p => (
-        
+
           console.log(p.player_name, n),
           n++,
 
           {
 
-          
-          entry: p.entry,
-          name: p.player_name
-        }
-      
-      
-      
-      
-      ));
+
+            entry: p.entry,
+            name: p.player_name
+          }
+
+
+
+
+        ));
         setPlayerNames(players.map(p => p.name));
 
         const histories = await Promise.all(
@@ -96,98 +102,102 @@ function LeagueChartPage() {
   }, [leagueId]);
 
   // Show legend after animationDuration
- useEffect(() => {
-  const timer = setTimeout(() => {
-    setAnimateLines(false); // turn off animation after first load
-  }, 1900); // match your animation duration
-  return () => clearTimeout(timer);
-}, []);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setAnimateLines(false); // turn off animation after first load
+    }, 1900); // match your animation duration
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleMouseEnter = (e) => {
     if (e && e.value && !somethingIsClicked) setHoveredLine(e.value);
   };
 
-  const handleMouseLeave = () => 
-    {if (!somethingIsClicked) {
+  const handleMouseLeave = () => {
+    if (!somethingIsClicked) {
       alert('hu');
-      setHoveredLine(null)}};
+      setHoveredLine(null)
+    }
+  };
 
 
-const [clickedLines, setClickedLines] = useState([]); // array of currently clicked lines
-const [somethingIsClicked, setSomethingIsClicked] = useState(false);
+  const [clickedLines, setClickedLines] = useState([]); // array of currently clicked lines
+  const [somethingIsClicked, setSomethingIsClicked] = useState(false);
 
 
 
-// Custom legend function
-const renderLegend = ({ payload }) => (
-  <div style={{ textAlign: "center", color: "darkblue" }}>
-    {payload.map(entry => (
-      <span
-        key={entry.value}
-        onClick={() => handleMouseClick({ value: entry.value })}
-        onMouseEnter={() => {if (!somethingIsClicked) {setHoveredLine(entry.value)}}}
-        onMouseLeave={() => {if (!somethingIsClicked) {setHoveredLine(null)}}}
-        style={{
-          margin: "0 8px",
-          cursor: "pointer",
-          fontWeight: clickedLines.includes(entry.value) ? "bold" : "normal",
-          display: "inline-flex",
-          alignItems: "center"
-        }}
-      >
-        {/* colored box */}
+  // Custom legend function
+  const renderLegend = ({ payload }) => (
+    <div style={{ textAlign: "center", color: "darkblue" }}>
+      {payload.map(entry => (
         <span
+          key={entry.value}
+          onClick={() => handleMouseClick({ value: entry.value })}
+          onMouseEnter={() => { if (!somethingIsClicked) { setHoveredLine(entry.value) } }}
+          onMouseLeave={() => { if (!somethingIsClicked) { setHoveredLine(null) } }}
           style={{
-            display: "inline-block",
-            width: 12,
-            height: 12,
-            backgroundColor: entry.color, // this keeps the line color
-            marginRight: 4,
-            borderRadius: 2
+            margin: "0 8px",
+            cursor: "pointer",
+            fontWeight: clickedLines.includes(entry.value) ? "bold" : "normal",
+            display: "inline-flex",
+            alignItems: "center"
           }}
-        />
-        {entry.value}
-      </span>
-    ))}
-  </div>
-);
+        >
+          {/* colored box */}
+          <span
+            style={{
+              display: "inline-block",
+              width: 12,
+              height: 12,
+              backgroundColor: entry.color, // this keeps the line color
+              marginRight: 4,
+              borderRadius: 2
+            }}
+          />
+          {entry.value}
+        </span>
+      ))}
+    </div>
+  );
 
-const getCustomTicks = (numPlayers) => {
-const step = Math.floor(numPlayers / 8); // roughly 8 lines
-  const ticks = [];
-  for (let i = 1; i <= numPlayers; i += step) {
-    ticks.push(i);
-  }
-  return ticks;
-};
+  const getCustomTicks = (numPlayers) => {
+    const step = Math.floor(numPlayers / 8); // roughly 8 lines
+    const ticks = [];
+    for (let i = 1; i <= numPlayers; i += step) {
+      ticks.push(i);
+    }
+    return ticks;
+  };
 
-const handleMouseClick = (e) => {
-  if (e && e.value) {
-    setClickedLines((prev) => {
-      let newClickedLines;
-      if (prev.includes(e.value)) {
-        // Line already clicked → remove it
-        newClickedLines = prev.filter((name) => name !== e.value);
-      } else {
-        // Line not clicked → add it
-        newClickedLines = [...prev, e.value];
-      }
+  const handleMouseClick = (e) => {
+    if (e && e.value) {
+      setClickedLines((prev) => {
+        let newClickedLines;
+        if (prev.includes(e.value)) {
+          // Line already clicked → remove it
+          newClickedLines = prev.filter((name) => name !== e.value);
+        } else {
+          // Line not clicked → add it
+          newClickedLines = [...prev, e.value];
+        }
 
-      // Update somethingIsClicked based on new state
-      setSomethingIsClicked(newClickedLines.length > 0);
+        // Update somethingIsClicked based on new state
+        setSomethingIsClicked(newClickedLines.length > 0);
 
-      return newClickedLines;
-    });
-  }
-};
+        return newClickedLines;
+      });
+    }
+  };
 
-const navigate = useNavigate();
+  const navigate = useNavigate();
 
-const NLClick = ( ) => {
+  const NLClick = () => {
 
     navigate(`/number-line/${leagueId}`); // pass via URL
-}
+  }
 
+  const zoomIn = (setZoom, zoomLevel) => setZoom(Math.min(3, zoomLevel + zoomStep));
+  const zoomOut = (setZoom, zoomLevel) => setZoom(Math.max(1, zoomLevel - zoomStep));
 
 return (
   <div className="leaguechart-container">
@@ -195,97 +205,123 @@ return (
 
     <button onClick={NLClick}>Number Line</button>
 
-
     {/* Chart section */}
-<div className="chart-scroll-container">
-  {/* === Chart Card 1 === */}
-  <div className="chart-card">
-    <p>RANK/GW</p>
-    {chartData.length > 0 ? (
-      <ResponsiveContainer width="100%" height={400}>
-        <LineChart
-          data={chartData}
-          margin={{ top: 20, right: 30, left: -15, bottom: 10 }}
-        >
-          <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
-          <XAxis
-            dataKey="week"
-            allowDecimals={false}
-            label={{
-              dy: 20,
-              fill: "black",
-              style: { textAnchor: "default" },
-            }}
-          />
-          <YAxis
-            reversed
-            allowDecimals={false}
-            domain={[1, playerNames.length + 1]}
-            ticks={getCustomTicks(playerNames.length)}
-            label={{
-              angle: -90,
-              fill: "black",
-              position: "insideLeft",
-              dx: 10,
-              style: { textAnchor: "middle" },
-            }}
-          />
-          <Tooltip />
-          {playerNames.map((name, index) => (
-            <Line
-              isAnimationActive={animateLines}
-              key={name}
-              type="monotone"
-              dataKey={name}
-              stroke={colours[index % colours.length]}
-              strokeWidth={3}
-              opacity={
-                clickedLines.includes(name)
-                  ? 1
-                  : hoveredLine
-                  ? hoveredLine === name
-                    ? 1
-                    : 0.03
-                  : 1
-              }
-            />
-          ))}
-        </LineChart>
-      </ResponsiveContainer>
-    ) : (
-      <p>Loading chart...</p>
-    )}
-  </div>
+    <div className="chart-scroll-container">
+      {/* === Chart Card 1 === */}
+      <div className="chart-card">
+        <p>RANK/GW</p>
 
-  {/* === Chart Card 2 (duplicate for now) === */}
-  <div className="chart-card">
-    <p>POINTS/GW</p>
-    {chartData.length > 0 ? (
-      <ResponsiveContainer width="100%" height={400}>
-        <LineChart
-          data={chartData}
-          margin={{ top: 20, right: 30, left: -15, bottom: 10 }}
-        >
-          <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
-          <XAxis dataKey="week" />
-          <YAxis reversed allowDecimals={false} />
-          <Tooltip />
-          {playerNames.map((name, index) => (
-            <Line
-              key={name + "_copy"}
-              type="monotone"
-              dataKey={name}
-              stroke={colours[index % colours.length]}
-              strokeWidth={3}
-            />
-          ))}
-        </LineChart>
-      </ResponsiveContainer>
-    ) : (
-      <p>Loading chart...</p>
-    )}
-  </div>
-</div>
+        <div className="zoom-controls">
+          <button onClick={() => zoomOut(setZoomRank, zoomRank)}>−</button>
+          <span>{zoomRank.toFixed(1)}x</span>
+          <button onClick={() => zoomIn(setZoomRank, zoomRank)}>+</button>
+        </div>
+
+        {chartData.length > 0 ? (
+          <div
+            className="chart-zoom-container"
+            style={{
+              overflowX: "auto",
+              width: "100%",
+              border: "1px solid #eee",
+              borderRadius: "8px",
+              paddingBottom: "10px",
+            }}
+          >
+            <div
+              className="chart-zoom-inner"
+              style={{
+                width: `${zoomRank * 100}%`,
+                minWidth: "100%",
+                transition: "width 0.3s ease-in-out",
+              }}
+            >
+              <ResponsiveContainer width="100%" height={400}>
+                <LineChart
+                  data={chartData}
+                  margin={{ top: 20, right: 30, left: -15, bottom: 10 }}
+                >
+                  <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
+                  <XAxis
+                    dataKey="week"
+                    allowDecimals={false}
+                    label={{
+                      dy: 20,
+                      fill: "black",
+                      style: { textAnchor: "default" },
+                    }}
+                  />
+                  <YAxis
+                    reversed
+                    allowDecimals={false}
+                    domain={[1, playerNames.length + 1]}
+                    ticks={getCustomTicks(playerNames.length)}
+                    label={{
+                      angle: -90,
+                      fill: "black",
+                      position: "insideLeft",
+                      dx: 10,
+                      style: { textAnchor: "middle" },
+                    }}
+                  />
+                  <Tooltip />
+                  {playerNames.map((name, index) => (
+                    <Line
+                      isAnimationActive={animateLines}
+                      key={name}
+                      type="monotone"
+                      dataKey={name}
+                      stroke={colours[index % colours.length]}
+                      strokeWidth={3}
+                      opacity={
+                        clickedLines.includes(name)
+                          ? 1
+                          : hoveredLine
+                          ? hoveredLine === name
+                            ? 1
+                            : 0.03
+                          : 1
+                      }
+                    />
+                  ))}
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        ) : (
+          <p>Loading chart...</p>
+        )}
+      </div>
+
+      {/* === Chart Card 2 (duplicate for now) === */}
+      <div className="chart-card">
+        <p>POINTS/GW</p>
+        {chartData.length > 0 ? (
+          <ResponsiveContainer width="100%" height={400}>
+            <LineChart
+              data={chartData}
+              margin={{ top: 20, right: 30, left: -15, bottom: 10 }}
+            >
+              <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
+              <XAxis dataKey="week" />
+              <YAxis reversed allowDecimals={false} />
+              <Tooltip />
+              {playerNames.map((name, index) => (
+                <Line
+                  key={name + "_copy"}
+                  type="monotone"
+                  dataKey={name}
+                  stroke={colours[index % colours.length]}
+                  strokeWidth={3}
+                />
+              ))}
+            </LineChart>
+          </ResponsiveContainer>
+        ) : (
+          <p>Loading chart...</p>
+        )}
+      </div>
+    </div>
 
     {/* Separate legend section */}
     {!animateLines && (
@@ -321,5 +357,6 @@ return (
     )}
   </div>
 );
+
 }
 export default LeagueChartPage;
