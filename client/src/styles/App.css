@@ -113,15 +113,23 @@ h1, h2 {
   color: #333;
 }
 
-/* Chart wrapper for responsiveness */
-.chart-wrapper {
-  width: 100%;
-  padding: 0px;
+/* Scrollable multi-chart layout */
+.chart-scroll-container {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  padding-bottom: 1rem;
+}
+
+.chart-card {
+  flex: 0 0 100%; /* each chart fills full width of viewport */
+  scroll-snap-align: start;
   background: lightblue;
   border-radius: 12px;
-  margin: 0rem;
+  padding: 1rem;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  margin-bottom: 1.5rem;
 }
 
 /* Number Line button */
@@ -140,6 +148,46 @@ h1, h2 {
 .leaguechart-container button:hover {
   background-color: #1e90ff;
 }
+
+
+.chart-scroll-container {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  padding-bottom: 1rem;
+
+  /* Optional: a little visual spacing */
+  padding: 1rem 0;
+}
+
+/* 🔹 Scrollbar styling (works on Chrome, Edge, Safari) */
+.chart-scroll-container::-webkit-scrollbar {
+  height: 10px;
+}
+
+.chart-scroll-container::-webkit-scrollbar-track {
+  background: #e0e7ff; /* soft blue track */
+  border-radius: 10px;
+}
+
+.chart-scroll-container::-webkit-scrollbar-thumb {
+  background: #60a5fa; /* blue thumb */
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+.chart-scroll-container::-webkit-scrollbar-thumb:hover {
+  background: #2563eb; /* darker blue on hover */
+}
+
+/* 🔹 Firefox scrollbar */
+.chart-scroll-container {
+  scrollbar-width: thin;
+  scrollbar-color: #60a5fa #e0e7ff;
+}
+
 
 /* Custom legend styling */
 .legend-container {
@@ -163,6 +211,11 @@ h1, h2 {
   border-radius: 3px;
   margin-right: 5px;
 }
+
+
+
+
+
 
 /* Mobile responsiveness */
 @media (max-width: 600px) {

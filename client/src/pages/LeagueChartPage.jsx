@@ -197,71 +197,95 @@ return (
 
 
     {/* Chart section */}
-    <div className="chart-wrapper">
-      {chartData.length > 0 ? (
-<ResponsiveContainer width="100%" height={400}>
-  <LineChart
-    data={chartData}
-    margin={{ top: 20, right: 30, left: -15, bottom: 10 }} // 👈 make left smaller
-  >
-    <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
-    <XAxis dataKey="week"
-          allowDecimals={false}
-      label={{
-        //value: "GW",
-        dy: 20, // move text down slightly
-        fill: 'black',
-        
-      // move text right slightly to stay visible
-        style: { textAnchor: "default" }
-      }}
-    
-    />
-    
-<YAxis
+<div className="chart-scroll-container">
+  {/* === Chart Card 1 === */}
+  <div className="chart-card">
+    <p>RANK/GW</p>
+    {chartData.length > 0 ? (
+      <ResponsiveContainer width="100%" height={400}>
+        <LineChart
+          data={chartData}
+          margin={{ top: 20, right: 30, left: -15, bottom: 10 }}
+        >
+          <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
+          <XAxis
+            dataKey="week"
+            allowDecimals={false}
+            label={{
+              dy: 20,
+              fill: "black",
+              style: { textAnchor: "default" },
+            }}
+          />
+          <YAxis
+            reversed
+            allowDecimals={false}
+            domain={[1, playerNames.length + 1]}
+            ticks={getCustomTicks(playerNames.length)}
+            label={{
+              angle: -90,
+              fill: "black",
+              position: "insideLeft",
+              dx: 10,
+              style: { textAnchor: "middle" },
+            }}
+          />
+          <Tooltip />
+          {playerNames.map((name, index) => (
+            <Line
+              isAnimationActive={animateLines}
+              key={name}
+              type="monotone"
+              dataKey={name}
+              stroke={colours[index % colours.length]}
+              strokeWidth={3}
+              opacity={
+                clickedLines.includes(name)
+                  ? 1
+                  : hoveredLine
+                  ? hoveredLine === name
+                    ? 1
+                    : 0.03
+                  : 1
+              }
+            />
+          ))}
+        </LineChart>
+      </ResponsiveContainer>
+    ) : (
+      <p>Loading chart...</p>
+    )}
+  </div>
 
-  reversed
-  allowDecimals={false}
-  domain={[1, playerNames.length + 1]} // 1 = top rank, last player = bottom
-ticks={getCustomTicks(playerNames.length)}
-  label={{
-    //value: "Rank",
-    angle: -90,
-    fill: 'black',
-    position: "insideLeft",
-    dx: 10,
-    style: { textAnchor: "middle" }
-  }}
-/>
-
-    <Tooltip />
-    {playerNames.map((name, index) => (
-      <Line
-        isAnimationActive={animateLines} // controlled via state
-        key={name}
-        type="monotone"
-        dataKey={name}
-        stroke={colours[index % colours.length]}
-        strokeWidth={3}
-        opacity={
-          clickedLines.includes(name)
-            ? 1
-            : hoveredLine
-            ? hoveredLine === name
-              ? 1
-              : 0.03
-            : 1
-        }
-
-        />
-    ))}
-  </LineChart>
-</ResponsiveContainer>
-
-      ) : (
-        <p>Loading chart...</p>
-      )}
-    </div>
+  {/* === Chart Card 2 (duplicate for now) === */}
+  <div className="chart-card">
+    <p>POINTS/GW</p>
+    {chartData.length > 0 ? (
+      <ResponsiveContainer width="100%" height={400}>
+        <LineChart
+          data={chartData}
+          margin={{ top: 20, right: 30, left: -15, bottom: 10 }}
+        >
+          <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
+          <XAxis dataKey="week" />
+          <YAxis reversed allowDecimals={false} />
+          <Tooltip />
+          {playerNames.map((name, index) => (
+            <Line
+              key={name + "_copy"}
+              type="monotone"
+              dataKey={name}
+              stroke={colours[index % colours.length]}
+              strokeWidth={3}
+            />
+          ))}
+        </LineChart>
+      </ResponsiveContainer>
+    ) : (
+      <p>Loading chart...</p>
+    )}
+  </div>
+</div>
 
     {/* Separate legend section */}
     {!animateLines && (
