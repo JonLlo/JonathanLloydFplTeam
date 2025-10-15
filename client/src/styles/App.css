@@ -225,6 +225,11 @@ h1, h2 {
 }
 
 
+.yaxis-fixed .recharts-cartesian-grid,
+.yaxis-fixed .recharts-x-axis {
+  display: none !important;
+  
+}
 
 /* Custom legend styling */
 .legend-container {

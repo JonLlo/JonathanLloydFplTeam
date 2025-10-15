@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 import {
@@ -30,7 +30,6 @@ function LeagueChartPage() {
 
   // zoom state for each card
   const [zoomRank, setZoomRank] = useState(1);
-  const [zoomPoints, setZoomPoints] = useState(1);
   const zoomStep = 0.2;
 
 
@@ -195,168 +194,201 @@ function LeagueChartPage() {
 
     navigate(`/number-line/${leagueId}`); // pass via URL
   }
+const chartScrollRef = useRef(null);
 
-  const zoomIn = (setZoom, zoomLevel) => setZoom(Math.min(3, zoomLevel + zoomStep));
-  const zoomOut = (setZoom, zoomLevel) => setZoom(Math.max(1, zoomLevel - zoomStep));
+const mimicHover = (el) => {
+  alert('oko')
+  if (!el) return;
 
-return (
-  <div className="leaguechart-container">
-    <h1>FPL Mini-League Week-by-Week Ranks</h1>
+  const hoverEvent = new MouseEvent('mouseover', {
+    view: window,
+    bubbles: true,
+    cancelable: true
+  });
 
-    <button onClick={NLClick}>Number Line</button>
+  el.dispatchEvent(hoverEvent);
+};
+const adjustScroll = () => {
 
-    {/* Chart section */}
-    <div className="chart-scroll-container">
-      {/* === Chart Card 1 === */}
-      <div className="chart-card">
-        <p>RANK/GW</p>
+};
 
-        <div className="zoom-controls">
-          <button onClick={() => zoomOut(setZoomRank, zoomRank)}>−</button>
-          <span>{zoomRank.toFixed(1)}x</span>
-          <button onClick={() => zoomIn(setZoomRank, zoomRank)}>+</button>
-        </div>
+const zoomIn = (setZoom, zoomLevel) => setZoom(Math.min(3, zoomLevel + zoomStep));
+const [hoverTrigger, setHoverTrigger] = useState(0);
 
-        {chartData.length > 0 ? (
-          <div
-            className="chart-zoom-container"
-            style={{
-              overflowX: "auto",
-              width: "100%",
-              border: "1px solid #eee",
-              borderRadius: "8px",
-              paddingBottom: "10px",
-            }}
-          >
-            <div
-              className="chart-zoom-inner"
-              style={{
-                width: `${zoomRank * 100}%`,
-                minWidth: "100%",
-                transition: "width 0.3s ease-in-out",
-              }}
-            >
-              <ResponsiveContainer width="100%" height={400}>
-                <LineChart
-                  data={chartData}
-                  margin={{ top: 20, right: 30, left: -15, bottom: 10 }}
-                >
-                  <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
-                  <XAxis
-                    dataKey="week"
-                    allowDecimals={false}
-                    label={{
-                      dy: 20,
-                      fill: "black",
-                      style: { textAnchor: "default" },
-                    }}
-                  />
-                  <YAxis
-                    reversed
-                    allowDecimals={false}
-                    domain={[1, playerNames.length + 1]}
-                    ticks={getCustomTicks(playerNames.length)}
-                    label={{
-                      angle: -90,
-                      fill: "black",
-                      position: "insideLeft",
-                      dx: 10,
-                      style: { textAnchor: "middle" },
-                    }}
-                  />
-                  <Tooltip />
-                  {playerNames.map((name, index) => (
-                    <Line
-                      isAnimationActive={animateLines}
-                      key={name}
-                      type="monotone"
-                      dataKey={name}
-                      stroke={colours[index % colours.length]}
-                      strokeWidth={3}
-                      opacity={
-                        clickedLines.includes(name)
-                          ? 1
-                          : hoveredLine
-                          ? hoveredLine === name
-                            ? 1
-                            : 0.03
-                          : 1
-                      }
-                    />
-                  ))}
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
+const zoomOut = () => {
+  setZoomRank(prev => Math.max(1, prev - zoomStep));
+
+  // Trigger re-render like hover
+  setHoverTrigger(prev => prev + 1);
+};
+
+
+
+  return (
+    <div className="leaguechart-container">
+      <h1>FPL Mini-League Week-by-Week Ranks</h1>
+
+      <button onClick={NLClick}>Number Line</button>
+
+      {/* Chart section */}
+      <div className="chart-scroll-container">
+        {/* === Chart Card 1 === */}
+        <div className="chart-card">
+          <p>RANK/GW</p>
+
+          <div className="zoom-controls">
+<button onClick={() => {
+  zoomOut(setZoomRank, zoomRank);
+adjustScroll();
+}}>−</button>
+            <span>{zoomRank.toFixed(1)}x</span>
+            <button onClick={() => zoomIn(setZoomRank, zoomRank)}>+</button>
           </div>
-        ) : (
-          <p>Loading chart...</p>
-        )}
-      </div>
 
-      {/* === Chart Card 2 (duplicate for now) === */}
-      <div className="chart-card">
-        <p>POINTS/GW</p>
-        {chartData.length > 0 ? (
-          <ResponsiveContainer width="100%" height={400}>
-            <LineChart
-              data={chartData}
-              margin={{ top: 20, right: 30, left: -15, bottom: 10 }}
-            >
-              <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
-              <XAxis dataKey="week" />
-              <YAxis reversed allowDecimals={false} />
-              <Tooltip />
-              {playerNames.map((name, index) => (
-                <Line
-                  key={name + "_copy"}
-                  type="monotone"
-                  dataKey={name}
-                  stroke={colours[index % colours.length]}
-                  strokeWidth={3}
-                />
-              ))}
-            </LineChart>
-          </ResponsiveContainer>
-        ) : (
-          <p>Loading chart...</p>
-        )}
-      </div>
-    </div>
-
-    {/* Separate legend section */}
-    {!animateLines && (
-      <div className="legend-section">
-        <h2>Players</h2>
-        <div className="legend-container">
-          {playerNames.map((name, index) => (
+          {chartData.length > 0 ? (
             <div
-              key={name}
-              className="legend-item"
-              onClick={() => handleMouseClick({ value: name })}
-              onMouseEnter={() => {
-                if (!somethingIsClicked) setHoveredLine(name);
-              }}
-              onMouseLeave={() => {
-                if (!somethingIsClicked) setHoveredLine(null);
-              }}
+              ref={chartScrollRef}
+              className="chart-zoom-container"
               style={{
-                fontWeight: clickedLines.includes(name) ? "bold" : "normal",
-                opacity:
-                  clickedLines.length && !clickedLines.includes(name) ? 0.3 : 1,
+                overflowX: "auto",
+                width: "100%",
+                border: "1px solid red",
+                borderRadius: "8px",
+                paddingRight: "0px",
+                paddingBottom: "10px",
               }}
             >
-              <span
-                className="legend-color-box"
-                style={{ backgroundColor: colours[index % colours.length] }}
-              />
-              {name}
+              <div
+                className="chart-zoom-inner"
+                style={{
+                  width: `${zoomRank * 100}%`,
+                  minWidth: "100%",
+                  transition: "width 0.3s ease-in-out",
+                }}
+              >
+                <ResponsiveContainer width="100%" height={400}>
+                  <LineChart
+                    data={chartData}
+                    margin={{ top: 20, right: 30, left: -15, bottom: 10 }}
+                  >
+                    <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
+                    <XAxis
+                      dataKey="week"
+                      allowDecimals={false}
+                      label={{
+                        dy: 20,
+                        fill: "black",
+                        style: { textAnchor: "default" },
+                      }}
+                    />
+                    <YAxis
+                      reversed
+
+                      allowDecimals={false}
+                      domain={[1, playerNames.length + 1]}
+                      ticks={getCustomTicks(playerNames.length)}
+                      label={{
+                        angle: -90,
+                        fill: "black",
+                        position: "insideLeft",
+                        dx: 10,
+                        style: { textAnchor: "middle" },
+                      }}
+                    />
+
+                    <Tooltip />
+                    {playerNames.map((name, index) => (
+                      <Line
+                        isAnimationActive={animateLines}
+                        key={name}
+                        type="monotone"
+                        dataKey={name}
+                        stroke={colours[index % colours.length]}
+                        strokeWidth={3}
+                        opacity={
+                          clickedLines.includes(name)
+                            ? 1
+                            : hoveredLine
+                              ? hoveredLine === name
+                                ? 1
+                                : 0.03
+                              : 1
+                        }
+                      />
+                    ))}
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
             </div>
-          ))}
+          ) : (
+            <p>Loading chart...</p>
+          )}
+        </div>
+
+        {/* === Chart Card 2 (duplicate for now) === */}
+        <div className="chart-card">
+          <p>POINTS/GW</p>
+          {chartData.length > 0 ? (
+            <ResponsiveContainer width="100%" height={400}>
+              <LineChart
+                data={chartData}
+                margin={{ top: 20, right: 30, left: -15, bottom: 10 }}
+              >
+                <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
+                <XAxis dataKey="week" />
+                <YAxis reversed allowDecimals={false} />
+                <Tooltip />
+                {playerNames.map((name, index) => (
+                  <Line
+                    key={name + "_copy"}
+                    type="monotone"
+                    dataKey={name}
+                    stroke={colours[index % colours.length]}
+                    strokeWidth={3}
+                  />
+                ))}
+              </LineChart>
+            </ResponsiveContainer>
+          ) : (
+            <p>Loading chart...</p>
+          )}
         </div>
       </div>
-    )}
-  </div>
-);
+
+      {/* Separate legend section */}
+      {!animateLines && (
+        <div className="legend-section">
+          <h2>Players</h2>
+          <div className="legend-container">
+            {playerNames.map((name, index) => (
+              <div
+                key={name}
+                className="legend-item"
+                onClick={() => handleMouseClick({ value: name })}
+                onMouseEnter={() => {
+                  if (!somethingIsClicked) setHoveredLine(name);
+                }}
+                onMouseLeave={() => {
+                  if (!somethingIsClicked) setHoveredLine(null);
+                }}
+                style={{
+                  fontWeight: clickedLines.includes(name) ? "bold" : "normal",
+                  opacity:
+                    clickedLines.length && !clickedLines.includes(name) ? 0.3 : 1,
+                }}
+              >
+                <span
+                  className="legend-color-box"
+                  style={{ backgroundColor: colours[index % colours.length] }}
+                />
+                {name}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
 
 }
 export default LeagueChartPage;
