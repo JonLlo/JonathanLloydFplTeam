@@ -28,7 +28,7 @@ function LeagueChartPage() {
   const [animateLines, setAnimateLines] = useState(true);
 
 
-  ///// zoom state for each card
+  //// zoom state for each card
   const [zoomRank, setZoomRank] = useState(1);
   const zoomStep = 0.2;
 
