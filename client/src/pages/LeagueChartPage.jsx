@@ -55,7 +55,7 @@ function LeagueChartPage() {
 
 
   useEffect(() => {
-    
+
     const fetchData = async () => {
       try {
         var n = 1;
@@ -116,34 +116,34 @@ function LeagueChartPage() {
         setChartData(chartDataArr);
 
 
-      const pointDataArr = [];
-      console.log("weeklyRanks:", weeklyRanks);
-      let maxPoints = 0;
-      let minPoints = Infinity;
-      Object.keys(weeklyRanks)
-        .forEach(week => {
-          const weekData = { week: Number(week) };
-          weeklyRanks[week]
-            .forEach((p) => {
-              weekData[p.name] = p.rank; // league position or points
-              console.log(`WCCCC ${week}, Player ${p.name}, Points: ${p.rank}`);
-              if (p.rank > maxPoints) maxPoints = p.rank;
-              if (p.rank < minPoints) minPoints = p.rank;
+        const pointDataArr = [];
+        console.log("weeklyRanks:", weeklyRanks);
+        let maxPoints = 0;
+        let minPoints = Infinity;
+        Object.keys(weeklyRanks)
+          .forEach(week => {
+            const weekData = { week: Number(week) };
+            weeklyRanks[week]
+              .forEach((p) => {
+                weekData[p.name] = p.rank; // league position or points
+                console.log(`WCCCC ${week}, Player ${p.name}, Points: ${p.rank}`);
+                if (p.rank > maxPoints) maxPoints = p.rank;
+                if (p.rank < minPoints) minPoints = p.rank;
 
-            });
-          pointDataArr.push(weekData);
-        }
-      );
+              });
+            pointDataArr.push(weekData);
+          }
+          );
 
-      setMaxPoints(maxPoints);
-      setMinPoints(minPoints);
-      console.log("Min Points:", minPoints);
-      console.log("Max Points:", maxPoints);
-      setPointData(pointDataArr);
+        setMaxPoints(maxPoints);
+        setMinPoints(minPoints);
+        console.log("Min Points:", minPoints);
+        console.log("Max Points:", maxPoints);
+        setPointData(pointDataArr);
 
 
 
-      
+
       } catch (err) {
         console.error("Error fetching data:", err);
       }
@@ -349,7 +349,7 @@ function LeagueChartPage() {
                     {playerNames.map((name, index) => (
                       <Line
                         dot={true} // show dots for points (needed for per-dot hover)
-  activeDot={{ r: 8 }} // bigger active dot on hover
+                        activeDot={{ r: 8 }} // bigger active dot on hover
                         isAnimationActive={animateLines}
                         key={name}
                         type="monotone"
@@ -426,7 +426,7 @@ function LeagueChartPage() {
                       }}
                     />
                     <YAxis
-                 
+
 
                       allowDecimals={false}
                       domain={[minPoints - 10, maxPoints + 1]}
@@ -444,7 +444,102 @@ function LeagueChartPage() {
                     {playerNames.map((name, index) => (
                       <Line
                         dot={true} // show dots for points (needed for per-dot hover)
-  activeDot={{ r: 8 }} // bigger active dot on hover
+                        activeDot={{ r: 8 }} // bigger active dot on hover
+                        isAnimationActive={animateLines}
+                        key={name}
+                        type="monotone"
+                        dataKey={name}
+                        stroke={colours[index % colours.length]}
+                        strokeWidth={3}
+                        opacity={
+                          clickedLines.includes(name)
+                            ? 1
+                            : hoveredLine
+                              ? hoveredLine === name
+                                ? 1
+                                : 0.03
+                              : 1
+                        }
+                      />
+                    ))}
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          ) : (
+            <p>Loading chart...</p>
+          )}
+        </div>
+
+                {/* === Chart Card 3 (duplicate for now) === */}
+        <div className="chart-card">
+          <p>POINTS/GW</p>
+
+          <div className="zoom-controls">
+            <button onClick={() => {
+              zoomOut(setZoomRank, zoomRank);
+              adjustScroll();
+            }}>−</button>
+            <span>{zoomRank.toFixed(1)}x</span>
+            <button onClick={() => zoomIn(setZoomRank, zoomRank)}>+</button>
+          </div>
+
+          {pointData.length > 0 ? (
+            <div
+              ref={chartScrollRef}
+              className="chart-zoom-container"
+              style={{
+                overflowX: "auto",
+                width: "100%",
+                border: "1px solid red",
+                borderRadius: "8px",
+                paddingRight: "0px",
+                paddingBottom: "10px",
+              }}
+            >
+              <div
+                className="chart-zoom-inner"
+                style={{
+                  width: `${zoomRank * 100}%`,
+                  minWidth: "100%",
+                  transition: "width 0.3s ease-in-out",
+                }}
+              >
+                <ResponsiveContainer width="100%" height={400}>
+                  <LineChart
+                    data={pointData}
+                    margin={{ top: 20, right: 30, left: -15, bottom: 10 }}
+                  >
+                    <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
+                    <XAxis
+                      dataKey="week"
+                      allowDecimals={false}
+                      label={{
+                        dy: 20,
+                        fill: "black",
+                        style: { textAnchor: "default" },
+                      }}
+                    />
+                    <YAxis
+
+
+                      allowDecimals={false}
+                      domain={[minPoints - 10, maxPoints + 1]}
+                      ticks={getCustomTicks(minPoints, maxPoints)}
+                      label={{
+                        angle: -90,
+                        fill: "black",
+                        position: "insideLeft",
+                        dx: 10,
+                        style: { textAnchor: "middle" },
+                      }}
+                    />
+
+                    <Tooltip content={CustomTooltip} />
+                    {playerNames.map((name, index) => (
+                      <Line
+                        dot={true} // show dots for points (needed for per-dot hover)
+                        activeDot={{ r: 8 }} // bigger active dot on hover
                         isAnimationActive={animateLines}
                         key={name}
                         type="monotone"
