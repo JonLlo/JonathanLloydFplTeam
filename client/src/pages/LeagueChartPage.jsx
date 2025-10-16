@@ -12,6 +12,22 @@ import {
   ResponsiveContainer
 } from "recharts";
 
+
+const CustomTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    // payload is an array of all points at this x-axis value (week)
+    // You can choose to show only one player's info or customize it here.
+    const point = payload[0]; // just pick the first player for example
+    return (
+      <div style={{ backgroundColor: 'white', padding: 5, border: '1px solid #ccc' }}>
+        <p>Week: {label}</p>
+        <p>{point.name}: {point.value}</p>
+      </div>
+    );
+  }
+
+  return null;
+};
 function LeagueChartPage() {
 
   const { leagueId } = useParams(); // get leagueId from URL
@@ -240,18 +256,6 @@ function LeagueChartPage() {
   }
   const chartScrollRef = useRef(null);
 
-  const mimicHover = (el) => {
-    alert('oko')
-    if (!el) return;
-
-    const hoverEvent = new MouseEvent('mouseover', {
-      view: window,
-      bubbles: true,
-      cancelable: true
-    });
-
-    el.dispatchEvent(hoverEvent);
-  };
   const adjustScroll = () => {
 
   };
@@ -340,9 +344,12 @@ function LeagueChartPage() {
                       }}
                     />
 
-                    <Tooltip />
+                    <Tooltip content={CustomTooltip} />
+
                     {playerNames.map((name, index) => (
                       <Line
+                        dot={true} // show dots for points (needed for per-dot hover)
+  activeDot={{ r: 8 }} // bigger active dot on hover
                         isAnimationActive={animateLines}
                         key={name}
                         type="monotone"
@@ -433,9 +440,11 @@ function LeagueChartPage() {
                       }}
                     />
 
-                    <Tooltip />
+                    <Tooltip content={CustomTooltip} />
                     {playerNames.map((name, index) => (
                       <Line
+                        dot={true} // show dots for points (needed for per-dot hover)
+  activeDot={{ r: 8 }} // bigger active dot on hover
                         isAnimationActive={animateLines}
                         key={name}
                         type="monotone"
