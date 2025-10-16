@@ -187,14 +187,18 @@ function LeagueChartPage() {
 
 
 
-  const getCustomTicks = (numPlayers) => {
-    const step = Math.floor(numPlayers / 8); // roughly 8 lines
+  const getCustomTicks = (num) => {
+    const step = Math.floor(num / 8); // roughly 8 lines
     const ticks = [];
-    for (let i = 1; i <= numPlayers; i += step) {
+    for (let i = 1; i <= num; i += step) {
       ticks.push(i);
     }
     return ticks;
   };
+
+
+
+
 
   const handleMouseClick = (e) => {
     if (e && e.value) {
@@ -403,11 +407,11 @@ function LeagueChartPage() {
                       }}
                     />
                     <YAxis
-                      reversed
+                 
 
                       allowDecimals={false}
                       domain={[1, playerNames.length + 1]}
-                      ticks={getCustomTicks(playerNames.length)}
+                      ticks={getCustomTicks(450)}
                       label={{
                         angle: -90,
                         fill: "black",
