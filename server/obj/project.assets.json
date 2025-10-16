@@ -80,11 +80,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/jonnylloyd/fpl-website/server/server.csproj",
+      "projectUniqueName": "/Users/jonnylloyd/JonathanLloydFplTeam/server/server.csproj",
       "projectName": "server",
-      "projectPath": "/Users/jonnylloyd/fpl-website/server/server.csproj",
+      "projectPath": "/Users/jonnylloyd/JonathanLloydFplTeam/server/server.csproj",
       "packagesPath": "/Users/jonnylloyd/.nuget/packages/",
-      "outputPath": "/Users/jonnylloyd/fpl-website/server/obj/",
+      "outputPath": "/Users/jonnylloyd/JonathanLloydFplTeam/server/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/jonnylloyd/.nuget/NuGet/NuGet.Config"

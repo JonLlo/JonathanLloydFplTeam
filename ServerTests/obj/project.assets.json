@@ -2664,11 +2664,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/jonnylloyd/fpl-website/ServerTests/ServerTests.csproj",
+      "projectUniqueName": "/Users/jonnylloyd/JonathanLloydFplTeam/ServerTests/ServerTests.csproj",
       "projectName": "ServerTests",
-      "projectPath": "/Users/jonnylloyd/fpl-website/ServerTests/ServerTests.csproj",
+      "projectPath": "/Users/jonnylloyd/JonathanLloydFplTeam/ServerTests/ServerTests.csproj",
       "packagesPath": "/Users/jonnylloyd/.nuget/packages/",
-      "outputPath": "/Users/jonnylloyd/fpl-website/ServerTests/obj/",
+      "outputPath": "/Users/jonnylloyd/JonathanLloydFplTeam/ServerTests/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/jonnylloyd/.nuget/NuGet/NuGet.Config"
@@ -2683,8 +2683,8 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "projectReferences": {
-            "/Users/jonnylloyd/fpl-website/server/server.csproj": {
-              "projectPath": "/Users/jonnylloyd/fpl-website/server/server.csproj"
+            "/Users/jonnylloyd/JonathanLloydFplTeam/server/server.csproj": {
+              "projectPath": "/Users/jonnylloyd/JonathanLloydFplTeam/server/server.csproj"
             }
           }
         }
