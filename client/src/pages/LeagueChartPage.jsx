@@ -13,6 +13,7 @@ import {
 } from "recharts";
 
 function LeagueChartPage() {
+
   const { leagueId } = useParams(); // get leagueId from URL
   const colours = [
     "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd",
@@ -21,7 +22,7 @@ function LeagueChartPage() {
     "#3182bd", "#31a354", "#756bb1", "#e6550d", "#969696"
   ];
 
-
+  const [pointData, setPointData] = useState([]);
   const [chartData, setChartData] = useState([]);
   const [playerNames, setPlayerNames] = useState([]);
   const [hoveredLine, setHoveredLine] = useState(null);
@@ -35,6 +36,7 @@ function LeagueChartPage() {
 
 
   useEffect(() => {
+    
     const fetchData = async () => {
       try {
         var n = 1;
@@ -93,6 +95,27 @@ function LeagueChartPage() {
           });
 
         setChartData(chartDataArr);
+
+
+      const pointDataArr = [];
+      console.log("weeklyRanks:", weeklyRanks);
+      Object.keys(weeklyRanks)
+        .forEach(week => {
+          const weekData = { week: Number(week) };
+          weeklyRanks[week]
+            .forEach((p) => {
+              weekData[p.name] = p.rank; // league position or points
+              console.log(`WCCCC ${week}, Player ${p.name}, Points: ${p.rank}`);
+            });
+          pointDataArr.push(weekData);
+        });
+
+
+        setPointData(pointDataArr);
+
+
+
+      
       } catch (err) {
         console.error("Error fetching data:", err);
       }
@@ -343,7 +366,7 @@ function LeagueChartPage() {
             <button onClick={() => zoomIn(setZoomRank, zoomRank)}>+</button>
           </div>
 
-          {chartData.length > 0 ? (
+          {pointData.length > 0 ? (
             <div
               ref={chartScrollRef}
               className="chart-zoom-container"
@@ -366,7 +389,7 @@ function LeagueChartPage() {
               >
                 <ResponsiveContainer width="100%" height={400}>
                   <LineChart
-                    data={chartData}
+                    data={pointData}
                     margin={{ top: 20, right: 30, left: -15, bottom: 10 }}
                   >
                     <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
