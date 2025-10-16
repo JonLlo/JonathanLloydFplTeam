@@ -27,6 +27,9 @@ function LeagueChartPage() {
   const [playerNames, setPlayerNames] = useState([]);
   const [hoveredLine, setHoveredLine] = useState(null);
   const [animateLines, setAnimateLines] = useState(true);
+  const [maxPoints, setMaxPoints] = useState(100);
+  const [minPoints, setMinPoints] = useState(100);
+
 
 
   //// zoom state for each card
@@ -99,6 +102,8 @@ function LeagueChartPage() {
 
       const pointDataArr = [];
       console.log("weeklyRanks:", weeklyRanks);
+      let maxPoints = 0;
+      let minPoints = Infinity;
       Object.keys(weeklyRanks)
         .forEach(week => {
           const weekData = { week: Number(week) };
@@ -106,12 +111,19 @@ function LeagueChartPage() {
             .forEach((p) => {
               weekData[p.name] = p.rank; // league position or points
               console.log(`WCCCC ${week}, Player ${p.name}, Points: ${p.rank}`);
+              if (p.rank > maxPoints) maxPoints = p.rank;
+              if (p.rank < minPoints) minPoints = p.rank;
+
             });
           pointDataArr.push(weekData);
-        });
+        }
+      );
 
-
-        setPointData(pointDataArr);
+      setMaxPoints(maxPoints);
+      setMinPoints(minPoints);
+      console.log("Min Points:", minPoints);
+      console.log("Max Points:", maxPoints);
+      setPointData(pointDataArr);
 
 
 
@@ -186,11 +198,11 @@ function LeagueChartPage() {
   );
 
 
-
-  const getCustomTicks = (num) => {
+  // Function to generate custom ticks for Y-axis
+  const getCustomTicks = (min, num) => {
     const step = Math.floor(num / 8); // roughly 8 lines
     const ticks = [];
-    for (let i = 1; i <= num; i += step) {
+    for (let i = min; i <= num; i += step) {
       ticks.push(i);
     }
     return ticks;
@@ -318,7 +330,7 @@ function LeagueChartPage() {
 
                       allowDecimals={false}
                       domain={[1, playerNames.length + 1]}
-                      ticks={getCustomTicks(playerNames.length)}
+                      ticks={getCustomTicks(1, playerNames.length)}
                       label={{
                         angle: -90,
                         fill: "black",
@@ -410,8 +422,8 @@ function LeagueChartPage() {
                  
 
                       allowDecimals={false}
-                      domain={[1, playerNames.length + 1]}
-                      ticks={getCustomTicks(450)}
+                      domain={[minPoints - 10, maxPoints + 1]}
+                      ticks={getCustomTicks(minPoints, maxPoints)}
                       label={{
                         angle: -90,
                         fill: "black",
