@@ -157,13 +157,19 @@ function LeagueChartPage() {
             const weekData = { week: Number(week) };
             weeklyRanks[week]
               .forEach((p) => {
-                weekData[p.name] = p.rank; // league position or points
+                weekData[p.name] = p.rank / week; // average points per game
+                console.log('yoyo')
+                console.log(p.rank);// league position or points
+                console.log(week);
+                                console.log('yoywo')
+
                 console.log(`WCCCC ${week}, Player ${p.name}, Points: ${p.rank}`);
-                if (p.rank > avgmaxPoints) avgmaxPoints = p.rank;
-                if (p.rank < avgminPoints) avgminPoints = p.rank;
+                if (p.rank > avgmaxPoints) avgmaxPoints = p.rank/week;
+                if (p.rank < avgminPoints) avgminPoints = p.rank/week;
 
               });
             avgpointDataArr.push(weekData);
+            console.log(avgpointDataArr);
           }
           );
 
@@ -510,7 +516,7 @@ function LeagueChartPage() {
 
                 {/* === Chart Card 3 (duplicate for now) === */}
         <div className="chart-card">
-          <p>POINTS/GW</p>
+          <p>AvgPOINTS/GW</p>
 
           <div className="zoom-controls">
             <button onClick={() => {
@@ -561,8 +567,8 @@ function LeagueChartPage() {
 
 
                       allowDecimals={false}
-                      domain={[minPoints - 10, maxPoints + 1]}
-                      ticks={getCustomTicks(minPoints, maxPoints)}
+                      domain={[avgminPoints - 10, avgmaxPoints + 1]}
+                      ticks={getCustomTicks(avgminPoints, avgmaxPoints)}
                       label={{
                         angle: -90,
                         fill: "black",
