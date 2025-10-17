@@ -567,7 +567,7 @@ function LeagueChartPage() {
 
 
                       allowDecimals={false}
-                      domain={[avgminPoints - 10, avgmaxPoints + 1]}
+                      domain={[avgminPoints - 2, avgmaxPoints + 1]}
                       ticks={getCustomTicks(avgminPoints, avgmaxPoints)}
                       label={{
                         angle: -90,
