@@ -38,6 +38,7 @@ function LeagueChartPage() {
     "#3182bd", "#31a354", "#756bb1", "#e6550d", "#969696"
   ];
 
+  const [avgpointData, setavgPointData] = useState([]);
   const [pointData, setPointData] = useState([]);
   const [chartData, setChartData] = useState([]);
   const [playerNames, setPlayerNames] = useState([]);
@@ -45,6 +46,9 @@ function LeagueChartPage() {
   const [animateLines, setAnimateLines] = useState(true);
   const [maxPoints, setMaxPoints] = useState(100);
   const [minPoints, setMinPoints] = useState(100);
+
+  const [avgmaxPoints, setavgMaxPoints] = useState(100);
+  const [avgminPoints, setavgMinPoints] = useState(100);
 
 
 
@@ -140,6 +144,39 @@ function LeagueChartPage() {
         console.log("Min Points:", minPoints);
         console.log("Max Points:", maxPoints);
         setPointData(pointDataArr);
+
+
+        //AvgPoints
+
+        const avgpointDataArr = [];
+        console.log("weeklyRanks:", weeklyRanks);
+        let avgmaxPoints = 0;
+        let avgminPoints = Infinity;
+        Object.keys(weeklyRanks)
+          .forEach(week => {
+            const weekData = { week: Number(week) };
+            weeklyRanks[week]
+              .forEach((p) => {
+                weekData[p.name] = p.rank; // league position or points
+                console.log(`WCCCC ${week}, Player ${p.name}, Points: ${p.rank}`);
+                if (p.rank > avgmaxPoints) avgmaxPoints = p.rank;
+                if (p.rank < avgminPoints) avgminPoints = p.rank;
+
+              });
+            avgpointDataArr.push(weekData);
+          }
+          );
+
+        setavgMaxPoints(avgmaxPoints);
+        setavgMinPoints(avgminPoints);
+        console.log("Min Points:", avgminPoints);
+        console.log("Max Points:", avgmaxPoints);
+        setavgPointData(avgpointDataArr);
+
+
+
+
+
 
 
 
@@ -484,7 +521,7 @@ function LeagueChartPage() {
             <button onClick={() => zoomIn(setZoomRank, zoomRank)}>+</button>
           </div>
 
-          {pointData.length > 0 ? (
+          {avgpointData.length > 0 ? (
             <div
               ref={chartScrollRef}
               className="chart-zoom-container"
@@ -507,7 +544,7 @@ function LeagueChartPage() {
               >
                 <ResponsiveContainer width="100%" height={400}>
                   <LineChart
-                    data={pointData}
+                    data={avgpointData}
                     margin={{ top: 20, right: 30, left: -15, bottom: 10 }}
                   >
                     <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
