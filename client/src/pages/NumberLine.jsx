@@ -40,50 +40,29 @@ function NumberLinePage() {
   const maxPoints = Math.max(...players.map((p) => p.total));
 
   return (
-    <div style={{ padding: "2rem", fontFamily: "sans-serif" }}>
+    <div className="numberline-page" >
       <h1>Number Line: League {leagueId}</h1>
 
       <div
-        style={{
-          position: "relative",
-          height: 50,
-          borderTop: "2px solid red",
-          marginTop: 50,
+        className="numberline-line"
 
-        }}
       >
         {players.map((player) => {
           const percent = ((player.total - minPoints) / (maxPoints - minPoints)) * 100;
 
           return (
-            <div
+            <div className="numberline-text"
               key={player.name}
-              style={{
-                position: "absolute",
-                left: `${percent}%`,
-                top: -10,
-                textAlign: "center",
-                color: 'green'
-
-              }}
-            >
-              <div
-                style={{
-                  width: 20,
-                  height: 20,
-                  borderRadius: "50%",
-                  backgroundColor: "dodgerblue",
-                  marginBottom: 5,
-                }}
-              ></div>
-<div style={{ transform: "translateX(-2%) translateX(-10px)" }}>
-  {player.name.split(" ").map((part, index) => (
-    <div key={index} style={{ fontSize: 12 }}>
-      {part}
-    </div>
-  ))}
-  <div style={{ fontSize: 12 }}>{player.total} pts</div>
-</div>
+              style={{left: `${percent}%`}}>
+              <div className = "numberline-dot"></div>
+              <div style={{ transform: "translateX(-2%) translateX(-10px)" }}>
+                {player.name.split(" ").map((part, index) => (
+                  <div key={index} style={{ fontSize: 12 }}>
+                    {part}
+                  </div>
+                ))}
+                <div style={{ fontSize: 12 }}>{player.total} pts</div>
+              </div>
             </div>
 
           );
