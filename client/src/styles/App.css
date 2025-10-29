@@ -292,6 +292,13 @@ border-top: 5px solid red;
 margin-top: 50;
 
 }
+
+/*Label of names in number line*/
+.numberline-label {
+  border: 2px solid blue;
+}
+
+
 .numberline-text {
   position: absolute;
   top: -10px;
@@ -308,9 +315,6 @@ background-color: dodgerblue;
 margin-bottom: 5px;   
         
 }
-
-
-
 
 
 

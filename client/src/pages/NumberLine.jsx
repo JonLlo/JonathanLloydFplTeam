@@ -55,7 +55,10 @@ function NumberLinePage() {
               key={player.name}
               style={{left: `${percent}%`}}>
               <div className = "numberline-dot"></div>
-              <div style={{ transform: "translateX(-2%) translateX(-10px)" }}>
+
+
+      
+              <div className = "numberline-label" style={{ transform: "translateX(-2%) translateX(-10px)" }}>
                 {player.name.split(" ").map((part, index) => (
                   <div key={index} style={{ fontSize: 12 }}>
                     {part}
