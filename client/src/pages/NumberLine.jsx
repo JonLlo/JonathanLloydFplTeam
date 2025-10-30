@@ -10,6 +10,8 @@ import {
   LabelList,
   CartesianGrid,
 } from "recharts";
+import arsenalImg from '../img/arsenal.png';
+
 
 function NumberLinePage() {
 
@@ -35,6 +37,7 @@ useEffect(() => {
   if (!selectedPlayer) return;
 
   const fetchPlayerData = async () => {
+    console.log("Fetching data for player:", selectedPlayer);
     const res = await fetch(`http://localhost:5176/api/user-history/${selectedPlayer.entry}`);
     const data = await res.json();
     // set state to show more info in the card
@@ -73,9 +76,13 @@ useEffect(() => {
         const res = await fetch(`http://localhost:5176/api/league-data/${leagueId}`);
         if (!res.ok) throw new Error("Failed to fetch league data");
         const data = await res.json();
-        const playerTotals = data.standings.results.map((p) => ({
+        const playerTotals = data.standings.results.map((p) => (
+          {
           name: p.player_name,
           total: p.total,
+          rank: p.rank,
+          leagueRank: p.league_rank,
+          id: p.id
         }));
         setPlayers(playerTotals);
       } catch (err) {
@@ -91,11 +98,14 @@ useEffect(() => {
   //tooltip
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
+      console.log(`Tooltip payload:`, payload);
       const point = payload[0];
       return (
         <div style={{ backgroundColor: 'white', padding: 5, border: '1px solid #ccc' }}>
           <p>{shortenName(point.payload.name)}</p>
           <p>{point.payload.total} pts</p>
+
+          
         </div>
       );
     }
@@ -132,6 +142,7 @@ useEffect(() => {
     if (parts.length === 1) return parts[0];
     return `${parts[0]}.${parts[1][0].toUpperCase()}`;
   };
+  console.log("selectedPlayer:", selectedPlayer);
 
 return (
   <div style={{ padding: "2rem", position: "relative" }}>
@@ -200,9 +211,9 @@ style={{
 >
   {/* Image placeholder */}
   <img
-    src="https://via.placeholder.com/150"
+    src={arsenalImg}
     alt={selectedPlayer.name}
-    style={{ width: "150px", height: "150px", borderRadius: "50%", marginBottom: "15px" }}
+    style={{ maxWidth: "100px", marginBottom: "15px" }}
   />
 
   <h3>{selectedPlayer.name}</h3>
