@@ -10,7 +10,16 @@ import {
   LabelList,
   CartesianGrid,
 } from "recharts";
-import arsenalImg from '../img/arsenal.png';
+import Arsenal from '../img/Arsenal.png';
+import Chelsea from '../img/Chelsea.png';
+import Liverpool from '../img/Liverpool.png';
+import England from '../img/England.png';
+import Spurs from '../img/Spurs.png';
+import CrystalPalace from '../img/CrystalPalace.png';
+
+
+
+
 
 
 function NumberLinePage() {
@@ -30,6 +39,46 @@ const renderDot = ({ cx, cy, payload }) => {
     />
   );
 };
+
+
+
+// Map of known team names to their images
+const teamImages = {
+  Arsenal: Arsenal,
+  Chelsea: Chelsea,
+  Liverpool: Liverpool,
+  Spurs: Spurs,
+  CrystalPalace: CrystalPalace,
+  England: England
+};
+
+// Helper function
+const getTeamImage = (teamName) => {
+  return teamImages[teamName] || England; // fallback if no match
+};
+
+
+const [playerFaveTeam, setPlayerFaveTeam] = useState("");
+
+useEffect(() => {
+  if (!selectedPlayer) return;
+
+  const fetchPlayerTeam = async () => {
+    try {
+      const res = await fetch(`http://localhost:5176/api/user-data/${selectedPlayer.id}`);
+      const data = await res.json();
+      const teamName = data?.leagues?.classic?.[0]?.name || "Unknown Team";
+      setPlayerFaveTeam(teamName.trim().replace(' ', '')); // Remove spaces for matching
+    } catch (err) {
+      console.error("Error fetching player team:", err);
+    }
+  };
+
+  fetchPlayerTeam();
+}, [selectedPlayer]);
+
+
+
 
 
 
@@ -82,7 +131,7 @@ useEffect(() => {
           total: p.total,
           rank: p.rank,
           leagueRank: p.league_rank,
-          id: p.id
+          id: p.entry
         }));
         setPlayers(playerTotals);
       } catch (err) {
@@ -211,14 +260,15 @@ style={{
 >
   {/* Image placeholder */}
   <img
-    src={arsenalImg}
-    alt={selectedPlayer.name}
-    style={{ maxWidth: "100px", marginBottom: "15px" }}
+    src={getTeamImage(playerFaveTeam)}
+    alt={playerFaveTeam}
+    style={{ maxWidth: playerFaveTeam === "Spurs" || playerFaveTeam === "England" ? "210px" : "100px", marginBottom: "15px" }}
   />
 
   <h3>{selectedPlayer.name}</h3>
   <p>is</p>
   <p>Total points: {selectedPlayer.total}</p>
+  <id>{selectedPlayer.id} </id>
   <p>Place: 3rd</p>
   <p>10 points behind Jack</p>
   <p>12 points ahead of Tim</p>
