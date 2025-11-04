@@ -52,7 +52,7 @@ const teamImages = {
   England: England
 };
 
-// Helper function
+/// Helper function
 const getTeamImage = (teamName) => {
   return teamImages[teamName] || England; // fallback if no match
 };
