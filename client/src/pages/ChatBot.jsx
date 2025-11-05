@@ -1,43 +1,61 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 function ChatBot({ leagueId }) {
   const [userMessage, setUserMessage] = useState("");
   const [chatLog, setChatLog] = useState([]);
 
-  const handleSend = async () => {
-    if (!userMessage.trim()) return;
+  const sessionId = `fpl-session-${leagueId}`;
 
-    // Add user message to chat log
-    setChatLog((prev) => [...prev, { sender: "user", text: userMessage }]);
+  useEffect(() => {
+    const uploadLeagueData = async () => {
+      try {
+        await axios.post(`http://localhost:5176/api/upload-league-data/${leagueId}`);
+        console.log("League data uploaded to Chatbase.");
+      } catch (error) {
+        console.error("Error uploading league data:", error.response?.data || error.message);
+      }
+    };
 
-    try {
-      const response = await axios.post(
-        "https://www.chatbase.co/api/v1/chat",
-        {
-          messages: [{ role: "user", content: userMessage }],
-          chatbotId: "Y_wFcvfUyVd9F9F4-vRdw",
-        },
-{
-           headers: {
-      Authorization: "Bearer e573ec81-c622-43f6-b9e2-9edcb20d298b",
-      "Content-Type": "application/json"
-    }}
-      );
-    console.log("Chatbase response:", response.data);
-      const botReply = response?.data?.text || "No response";
+    uploadLeagueData();
+  }, [leagueId]);
 
-      setChatLog((prev) => [...prev, { sender: "bot", text: botReply }]);
-    } catch (error) {
-      console.error("Chatbase error:", error);
-      setChatLog((prev) => [
-        ...prev,
-        { sender: "bot", text: "Sorry, something went wrong." },
-      ]);
-    }
+const handleSend = async () => {
+  if (!userMessage.trim()) return;
 
-    setUserMessage("");
-  };
+  const updatedChatLog = [...chatLog, { sender: "user", text: userMessage }];
+
+  const messages = updatedChatLog.map((msg) => ({
+    role: msg.sender === "user" ? "user" : "assistant",
+    content: msg.text
+  }));
+
+  try {
+    const response = await axios.post(
+      "https://www.chatbase.co/api/v1/chat",
+      {
+        chatbotId: "Y_wFcvfUyVd9F9F4-vRdw",
+        messages
+      },
+      {
+        headers: {
+          Authorization: "Bearer e573ec81-c622-43f6-b9e2-9edcb20d298b",
+          "Content-Type": "application/json"
+        }
+      }
+    );
+
+    const botReply = response.data.text || "No response";
+    setChatLog([...updatedChatLog, { sender: "bot", text: botReply }]);
+  } catch (error) {
+    console.error("Chatbase error:", error.response?.data || error.message);
+    setChatLog([...updatedChatLog, { sender: "bot", text: "Sorry, something went wrong." }]);
+  }
+
+  setUserMessage("");
+};
+
+
 
   return (
     <div style={{ marginTop: "2rem" }}>
