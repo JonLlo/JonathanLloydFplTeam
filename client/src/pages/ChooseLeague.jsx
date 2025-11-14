@@ -41,7 +41,7 @@ function ChooseLeague() {
 
   if (!userId) return <p>Please enter your FPL ID on the home page.</p>;
   if (loading) return <p>Loading user data...</p>;
-  if (error) return <p>Error: {error}</p>;
+  if (error) return <p>Error Occured here: {error}</p>;
 
   const jsonPreview = JSON.stringify(data, null, 2).slice(0, 500) + (JSON.stringify(data).length > 500 ? "..." : "");
 

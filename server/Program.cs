@@ -19,7 +19,7 @@ var app = builder.Build();
 app.UseCors("AllowLocalhost");
 
 // ----------------------
-// Endpoints
+// Endpointsm
 // ----------------------
 
 //LEAGUE ENDPOINT
