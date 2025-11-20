@@ -47,6 +47,10 @@
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
               "version": "[9.0.9, )"
+            },
+            "OpenAI": {
+              "target": "Package",
+              "version": "[2.2.0, )"
             }
           },
           "imports": [

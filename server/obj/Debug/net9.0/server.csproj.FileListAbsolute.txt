@@ -64,3 +64,6 @@
 /Users/jonnylloyd/JonathanLloydFplTeam/server/obj/Debug/net9.0/server.pdb
 /Users/jonnylloyd/JonathanLloydFplTeam/server/obj/Debug/net9.0/server.genruntimeconfig.cache
 /Users/jonnylloyd/JonathanLloydFplTeam/server/obj/Debug/net9.0/ref/server.dll
+/Users/jonnylloyd/JonathanLloydFplTeam/server/bin/Debug/net9.0/OpenAI.dll
+/Users/jonnylloyd/JonathanLloydFplTeam/server/bin/Debug/net9.0/System.ClientModel.dll
+/Users/jonnylloyd/JonathanLloydFplTeam/server/bin/Debug/net9.0/System.Memory.Data.dll

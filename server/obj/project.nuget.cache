@@ -1,11 +1,16 @@
 {
   "version": 2,
-  "dgSpecHash": "Znw8/rMK0t4=",
+  "dgSpecHash": "c0Ci/6U9/ig=",
   "success": true,
   "projectFilePath": "/Users/jonnylloyd/JonathanLloydFplTeam/server/server.csproj",
   "expectedPackageFiles": [
     "/Users/jonnylloyd/.nuget/packages/microsoft.aspnetcore.openapi/9.0.9/microsoft.aspnetcore.openapi.9.0.9.nupkg.sha512",
-    "/Users/jonnylloyd/.nuget/packages/microsoft.openapi/1.6.17/microsoft.openapi.1.6.17.nupkg.sha512"
+    "/Users/jonnylloyd/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/8.0.2/microsoft.extensions.dependencyinjection.abstractions.8.0.2.nupkg.sha512",
+    "/Users/jonnylloyd/.nuget/packages/microsoft.extensions.logging.abstractions/8.0.3/microsoft.extensions.logging.abstractions.8.0.3.nupkg.sha512",
+    "/Users/jonnylloyd/.nuget/packages/microsoft.openapi/1.6.17/microsoft.openapi.1.6.17.nupkg.sha512",
+    "/Users/jonnylloyd/.nuget/packages/openai/2.2.0/openai.2.2.0.nupkg.sha512",
+    "/Users/jonnylloyd/.nuget/packages/system.clientmodel/1.4.2/system.clientmodel.1.4.2.nupkg.sha512",
+    "/Users/jonnylloyd/.nuget/packages/system.memory.data/6.0.1/system.memory.data.6.0.1.nupkg.sha512"
   ],
   "logs": []
 }

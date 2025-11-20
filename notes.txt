@@ -24,4 +24,4 @@ ai-integration	AI chatbot	Connect OpenAI or ML model to backend
 feature/<name>	Specific feature development	feature/mini-league-graph, feature/user-auth
 
 
-FPL key: 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
+https://www.youtube.com/watch?v=zAyx5BGbXh4
