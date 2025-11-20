@@ -43,15 +43,12 @@ function ChooseLeague() {
   if (loading) return <p>Loading user data...</p>;
   if (error) return <p>Error Occured here: {error}</p>;
 
-  const jsonPreview = JSON.stringify(data, null, 2).slice(0, 500) + (JSON.stringify(data).length > 500 ? "..." : "");
+  //const jsonPreview = JSON.stringify(data, null, 2).slice(0, 500) + (JSON.stringify(data).length > 500 ? "..." : "");
 
   return (
     <div className="container">
         
       <h1>FPL Data for ID {userId}</h1>
-
-      <h2>JSON Preview:</h2>
-      <pre style={{ whiteSpace: "pre-wrap", fontSize: "12px" }}>{jsonPreview}</pre>
 
       <h2>Classic Leagues:</h2>
       <ul className="league-list">

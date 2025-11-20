@@ -1,6 +1,13 @@
+using System.Text.Json;
+using System.Text;
+
+
+
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ServerTests")]
 
 var builder = WebApplication.CreateBuilder(args);
+
+
 
 // 1️⃣ Register services BEFORE building the app
 builder.Services.AddHttpClient();
@@ -14,6 +21,7 @@ builder.Services.AddCors(options =>
 
 // 2️⃣ Build the app
 var app = builder.Build();
+
 
 // 3️⃣ Use middleware AFTER building
 app.UseCors("AllowLocalhost");
@@ -80,45 +88,128 @@ app.MapGet("/api/user-history/{id}", async (string id, IHttpClientFactory httpCl
     }
 });
 
-// 4️⃣ Run the app
-//CHATBOT
-app.MapPost("/api/upload-league-data/{id}", async (string id, IHttpClientFactory httpClientFactory) =>
+app.MapPost("/api/chat", async (ChatRequest req, IHttpClientFactory http) =>
 {
-    var client = httpClientFactory.CreateClient();
 
-    try
+    
+    var client = http.CreateClient();
+
+    // Read API key
+    var apiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
+    if (string.IsNullOrEmpty(apiKey))
+        return Results.Problem("API key missing.");
+
+    // 1️⃣ Fetch league standings JSON
+    var leagueUrl = $"https://fantasy.premierleague.com/api/leagues-classic/{req.LeagueId}/standings/";
+    var leagueJson = await client.GetStringAsync(leagueUrl);
+
+    // 2️⃣ Build messages
+    var messages = new[]
     {
-        // Fetch raw JSON from FPL API
-        var json = await client.GetStringAsync($"https://fantasy.premierleague.com/api/entry/{id}/");
+        new {
+            role = "system",
+            content = @"
+You are an expert Fantasy Premier League assistant.
 
-        // Send full JSON to Chatbase
-        var chatbasePayload = new
+You can:
+- Read league JSON
+- Understand which players are in the league
+- Find someone like 'Jack' by name
+- Request their entryId via function calling
+- Then fetch their entry, history, and transfers
+- Make predictions like: 'Jack usually transfers defenders, so...'
+"
+        },
+        new {
+            role = "user",
+            content = $"League standings: {leagueJson}\n\nUser asks: {req.Message}"
+        }
+    };
+
+    // 3️⃣ Define tool/function
+    var payload = new
+    {
+        model = "gpt-4o-mini",
+        messages,
+        functions = new[]
         {
-            messages = new[] {
-                new {
-                    role = "user",
-                    content = $"Here is the full Fantasy Premier League data for entry ID {id}:\n\n{json}"
+            new {
+                name = "get_player_data",
+                description = "Fetch player's entry, transfers, and history",
+                parameters = new {
+                    type = "object",
+                    properties = new {
+                        entryId = new { type = "integer" }
+                    },
+                    required = new[] { "entryId" }
                 }
-            },
-            chatbotId = "Y_wFcvfUyVd9F9F4-vRdw"
-        };
+            }
+        },
+        function_call = "auto"
+    };
 
-        var chatbaseRequest = new HttpRequestMessage(HttpMethod.Post, "https://www.chatbase.co/api/v1/chat")
-        {
-            Content = JsonContent.Create(chatbasePayload)
-        };
-        chatbaseRequest.Headers.Add("Authorization", "Bearer e573ec81-c622-43f6-b9e2-9edcb20d298b");
+    // 4️⃣ Send to OpenAI
+    var httpReq = new HttpRequestMessage(HttpMethod.Post, "https://api.openai.com/v1/chat/completions");
+    httpReq.Headers.Add("Authorization", $"Bearer {apiKey}");
+    httpReq.Content = new StringContent(System.Text.Json.JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
 
-        var chatbaseResponse = await client.SendAsync(chatbaseRequest);
-        var chatbaseResult = await chatbaseResponse.Content.ReadAsStringAsync();
+    var resp = await client.SendAsync(httpReq);
+    var json = await resp.Content.ReadAsStringAsync();
 
-        return Results.Content(chatbaseResult, "application/json");
-    }
-    catch (Exception ex)
+    using var doc = JsonDocument.Parse(json);
+    var choice = doc.RootElement.GetProperty("choices")[0];
+    var msg = choice.GetProperty("message");
+
+    // 5️⃣ If LLM wants to call function
+    if (msg.TryGetProperty("function_call", out var func))
     {
-        Console.WriteLine($"🔥 Upload error: {ex.Message}");
-        return Results.Problem(detail: ex.Message, statusCode: 500);
+        var argsString = func.GetProperty("arguments").GetString();
+        var args = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, int>>(argsString);
+
+        int entryId = args["entryId"];
+
+        // Fetch FPL data
+        var entry = await client.GetStringAsync($"https://fantasy.premierleague.com/api/entry/{entryId}/");
+        var transfers = await client.GetStringAsync($"https://fantasy.premierleague.com/api/entry/{entryId}/transfers/");
+        var history = await client.GetStringAsync($"https://fantasy.premierleague.com/api/entry/{entryId}/history/");
+
+        var toolMessage = new {
+            role = "tool",
+            name = "get_player_data",
+            content = System.Text.Json.JsonSerializer.Serialize(
+                new { entry, transfers, history }
+            )
+        };
+
+        // Follow-up request
+        var followPayload = new
+        {
+            model = "gpt-4o-mini",
+            messages = new object[] { messages[0], messages[1], msg, toolMessage }
+        };
+
+        var followReq = new HttpRequestMessage(HttpMethod.Post, "https://api.openai.com/v1/chat/completions");
+        followReq.Headers.Add("Authorization", $"Bearer {apiKey}");
+        followReq.Content = new StringContent(System.Text.Json.JsonSerializer.Serialize(followPayload), Encoding.UTF8, "application/json");
+
+        var followResp = await client.SendAsync(followReq);
+        var followJson = await followResp.Content.ReadAsStringAsync();
+        using var followDoc = JsonDocument.Parse(followJson);
+
+        var finalMessage =
+            followDoc.RootElement.GetProperty("choices")[0]
+            .GetProperty("message")
+            .GetProperty("content")
+            .GetString();
+
+        return Results.Ok(new { result = finalMessage });
     }
-});
+
+    // 6️⃣ No function call — respond directly
+    var direct = msg.GetProperty("content").GetString();
+    return Results.Ok(new { result = direct }); });
+
+
+// 4️⃣ Run the app
 
 app.Run();
