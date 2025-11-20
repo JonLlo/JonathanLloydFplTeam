@@ -1,15 +1,12 @@
-// Chatbot.jsx
 import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
-import '../styles/Chatbot.css'
 
 export default function Chatbot() {
   const [message, setMessage] = useState('');
-  const [leagueId, setLeagueId] = useState('275033'); 
   const [chatLog, setChatLog] = useState([]);
   const chatEndRef = useRef(null);
 
-  // Scroll to bottom when new message added
+  // Scroll to bottom whenever chatLog updates
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chatLog]);
@@ -17,16 +14,17 @@ export default function Chatbot() {
   const sendMessage = async () => {
     if (!message) return;
 
+    // Add user's message to chat log
     setChatLog(prev => [...prev, { sender: 'user', text: message }]);
 
     try {
-      const res = await axios.post('http://localhost:5000/api/chat', {
-        Message: message,
-        LeagueId: leagueId,
-      });
+      // Send message to backend
+      const res = await axios.post('http://localhost:5176/api/chat', { message });
 
-      const botReply = res.data.result;
-      setChatLog(prev => [...prev, { sender: 'bot', text: botReply }]);
+      // Add bot's reply to chat log
+      setChatLog(prev => [...prev, { sender: 'bot', text: res.data.result }]);
+
+      // Clear input
       setMessage('');
     } catch (err) {
       console.error(err);
@@ -34,35 +32,48 @@ export default function Chatbot() {
     }
   };
 
-  const handleKeyPress = (e) => {
+  const handleKeyDown = (e) => {
     if (e.key === 'Enter') sendMessage();
   };
 
   return (
-    <div className="chatbot-container">
+    <div style={{ width: '400px', margin: '20px auto', fontFamily: 'sans-serif' }}>
       <h2>FPL Chatbot</h2>
 
-      <div className="chat-window">
+      <div
+        style={{
+          border: '1px solid #ccc',
+          borderRadius: '5px',
+          padding: '10px',
+          height: '300px',
+          overflowY: 'auto',
+          marginBottom: '10px',
+          backgroundColor: '#f9f9f9',
+        }}
+      >
         {chatLog.map((msg, i) => (
-          <div
-            key={i}
-            className={`chat-message ${msg.sender === 'user' ? 'user' : 'bot'}`}
-          >
-            <span>{msg.text}</span>
+          <div key={i} style={{ marginBottom: '8px' }}>
+            <b>{msg.sender}:</b> {msg.text}
           </div>
         ))}
         <div ref={chatEndRef} />
       </div>
 
-      <div className="chat-input">
+      <div style={{ display: 'flex' }}>
         <input
           type="text"
           value={message}
           onChange={e => setMessage(e.target.value)}
-          onKeyPress={handleKeyPress}
-          placeholder="Ask about your league..."
+          onKeyDown={handleKeyDown}
+          placeholder="Type your message..."
+          style={{ flex: 1, padding: '8px', fontSize: '14px' }}
         />
-        <button onClick={sendMessage}>Send</button>
+        <button
+          onClick={sendMessage}
+          style={{ padding: '8px 12px', marginLeft: '5px', cursor: 'pointer' }}
+        >
+          Send
+        </button>
       </div>
     </div>
   );
